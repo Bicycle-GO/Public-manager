@@ -41,4 +41,4 @@ node server.mjs
 node --test tests/*.test.mjs
 ```
 
-정적 배포 시 `index.html`, `styles.css`, `pages.css`, `app.js`, `data.js`를 함께 올리면 됩니다. 라우팅은 URL 해시를 사용합니다. 예: `#theory/1/1-2`는 제1과목 두 번째 이론 단원, `#practice/2`는 제2과목 예상문제입니다.
+정적 배포 시 `index.html`, `styles.css`, `pages.css`, `readability.css`, `app.js`, `data.js`를 함께 올리면 됩니다. 라우팅은 URL 해시를 사용합니다. 예: `#theory/1/1-2`는 제1과목 두 번째 이론 단원, `#practice/2`는 제2과목 예상문제입니다.
