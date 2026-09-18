@@ -1,3 +1,5 @@
+import { lessonGuides } from './lesson-guides.js';
+
 export const sources = {
   subjects: 'https://www.law.go.kr/flDownload.do?bylClsCd=110201&flSeq=155928887&gubun=',
   exam: 'https://www.korea.kr/multi/visualNewsView.do?newsId=148971361',
@@ -74,6 +76,11 @@ export const lessons = [
     ['기록과 다음 조달', '공고, 평가, 계약, 변경, 검사, 지급에 관한 자료를 관리합니다. 이행 중 발견한 문제와 개선점을 정리하면 다음 조달의 규격과 계획을 개선하는 데 도움이 됩니다.']
   ], takeaway: '계약 종결은 서류 정리, 사후 의무 확인, 개선점 축적까지 포함합니다.', source: 'pps' }
 ];
+for (const lesson of lessons) {
+  lesson.guide = lessonGuides[lesson.id];
+  lesson.minutes += 6;
+}
+
 const rawQuestions = [
   ['1-1','공공조달의 경제성을 가장 적절하게 설명한 것은?', ['구매가격이 가장 낮은 물품을 무조건 선택한다','필요한 품질과 총비용을 함께 고려한다','납기가 가장 빠르면 다른 조건은 보지 않는다','기존 거래 업체와만 계약한다'],1,'경제성은 필요한 품질과 성능을 충족하면서 자원을 합리적으로 사용하는 것입니다. 구매가격만 낮다고 경제적이라고 단정할 수 없습니다.'],
   ['1-1','공공조달의 투명성을 높이는 행동은?', ['평가 기준을 담당자만 알고 있다','계약 과정을 구두로만 처리한다','절차와 판단 근거를 기록한다','평가 결과에 맞춰 기준을 바꾼다'],2,'절차와 의사결정 근거를 기록하면 검증 가능성이 높아집니다. 비공개 기준이나 사후 기준 변경은 투명성과 공정성을 훼손합니다.'],
