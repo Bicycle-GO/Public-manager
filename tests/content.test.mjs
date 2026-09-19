@@ -2,6 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { subjects, lessons, questions, sources } from '../data.js';
 import { renderLessonGuide } from '../lesson-content.js';
+import { materialEdition, studyPlan, studyNotes } from '../study-materials.js';
+import { renderStudyMaterials, renderStudyNotes, renderMaterialTopics } from '../study-ui.js';
 
 test('Every subject supports four lessons and a balanced four-question mock exam', () => {
   assert.equal(subjects.length, 3);
@@ -47,4 +49,46 @@ test('Lessons have content, a valid official source, and practice questions', ()
     assert.ok(questions.some(q => q.lesson === lesson.id));
     assert.ok(new URL(sources[lesson.source]).hostname.endsWith('.go.kr'));
   }
+});
+
+test('Expanded practice preserves existing IDs and provides ten questions per subject', () => {
+  assert.equal(questions.length, 30);
+  for (const subject of subjects) {
+    assert.equal(questions.filter(q => q.subject === subject.id).length, 10);
+  }
+  for (let index = 0; index < 24; index++) {
+    const lesson = lessons[Math.floor(index / 2)];
+    assert.equal(questions[index].id, index + 1);
+    assert.equal(questions[index].lesson, lesson.id);
+  }
+});
+
+test('Study supplements and plan link to available lessons and official sources', () => {
+  assert.equal(studyPlan.length, 14);
+  assert.deepEqual(studyPlan.map(p => p.day), Array.from({length: 14}, (_, i) => i + 1));
+  assert.deepEqual(studyPlan.flatMap(p => p.lessons).sort(), lessons.map(l => l.id).sort());
+  assert.equal(Object.values(studyNotes).flatMap(n => n.calculations || []).length, 8);
+  for (const lesson of lessons) {
+    const note = studyNotes[lesson.id];
+    assert.ok(note.topics.length >= 2 && note.checkpoint);
+    for (const key of note.sources) assert.ok(new URL(sources[key]).hostname.endsWith('.go.kr'));
+    if (note.table) assert.ok(note.table.rows.every(row => row.length === note.table.headers.length));
+    const html = renderStudyNotes(lesson);
+    assert.ok(html.includes(`href="#practice/${lesson.subject}"`));
+    for (const example of note.calculations || []) {
+      assert.ok(example.premise && example.formula && example.steps.length && example.result && example.note);
+      assert.ok(html.includes(example.result) && html.includes('<details>'));
+    }
+  }
+});
+
+test('Material hub reports scope honestly, filters topics, and reflects existing progress', () => {
+  const html = renderStudyMaterials({completed:['1-1'], answers:{1:1, 25:2}});
+  assert.ok(html.includes(materialEdition.provenance));
+  assert.ok(html.includes('이론 읽기 완료'));
+  assert.ok(html.includes('제1과목 문제 (2/10)'));
+  assert.ok(renderMaterialTopics('선금').includes('#theory/3/3-2'));
+  assert.ok(renderMaterialTopics('  드론 ').includes('#theory/2/2-3'));
+  assert.ok(renderMaterialTopics('없는용어검증').includes('일치하는 단원이 없습니다'));
+  assert.ok(!renderMaterialTopics('<img src=x onerror=alert(1)>').includes('<img'));
 });

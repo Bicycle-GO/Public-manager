@@ -1,4 +1,5 @@
 import { lessonGuides } from './lesson-guides.js';
+import { additionalQuestions } from './study-materials.js';
 
 export const sources = {
   subjects: 'https://www.law.go.kr/flDownload.do?bylClsCd=110201&flSeq=155928887&gubun=',
@@ -6,7 +7,16 @@ export const sources = {
   law: 'https://www.law.go.kr/법령/국가를당사자로하는계약에관한법률',
   local: 'https://www.law.go.kr/법령/지방자치단체를당사자로하는계약에관한법률',
   pps: 'https://www.pps.go.kr/hrd/home/UserBoardActionUpdate.do?BO_CODE=REFERENCE_ROOM&BO_IDX=6581&CHILD_MENU=MENU209&ROOT_MENU=MENU002&method=detail&pageLine=10&pageNo=2&searchText=',
-  qnet: 'https://www.q-net.or.kr/'
+  qnet: 'https://www.q-net.or.kr/',
+  decree: 'https://www.law.go.kr/법령/국가를당사자로하는계약에관한법률시행령',
+  civil: 'https://www.law.go.kr/법령/민법',
+  sme: 'https://www.law.go.kr/법령/중소기업제품구매촉진및판로지원에관한법률',
+  green: 'https://www.law.go.kr/법령/녹색제품구매촉진에관한법률',
+  innovation: 'https://ppi.g2b.go.kr/',
+  electronic: 'https://www.law.go.kr/법령/전자조달의이용및촉진에관한법률',
+  methods: 'https://pps.go.kr/kor/content.do?key=00178',
+  advance: 'https://www.law.go.kr/행정규칙/(계약예규)정부입찰·계약집행기준',
+  mas: 'https://www.pps.go.kr/kor/content.do?key=00183'
 };
 export const subjects = [
   { id: 1, title: '공공조달과 법제도 이해', short: '법제도 이해', desc: '조달의 원칙부터 법령 체계까지, 탄탄한 첫걸음', icon: 'building', color: 'green', tags: ['조달의 이해', '법령 체계'] },
@@ -78,7 +88,7 @@ export const lessons = [
 ];
 for (const lesson of lessons) {
   lesson.guide = lessonGuides[lesson.id];
-  lesson.minutes += 6;
+  lesson.minutes += 14;
 }
 
 const rawQuestions = [
@@ -107,4 +117,4 @@ const rawQuestions = [
   ['3-4','계약 대금 지급 이후 사후 관리에 대한 설명으로 옳은 것은?', ['모든 계약상 의무가 자동으로 소멸한다','계약에서 정한 하자 보수 등 잔존 의무를 확인한다','계약 기록을 즉시 모두 삭제한다','품질 문제는 더 이상 검토할 수 없다'],1,'대금 지급 이후에도 계약에서 정한 하자 보수나 비밀 유지 등 의무가 남을 수 있습니다. 관련 조건과 기간을 확인해야 합니다.'],
   ['3-4','계약 종결 후 개선점을 정리하는 목적은?', ['평가 기준을 소급 변경하기 위해','이미 지급한 금액을 임의 변경하기 위해','모든 기록을 없애기 위해','다음 조달의 계획과 요구사항을 개선하기 위해'],3,'이행 과정에서 드러난 문제와 개선점을 축적하면 다음 조달의 규격, 일정과 위험 관리를 개선할 수 있습니다.']
 ];
-export const questions = rawQuestions.map((q, i) => ({ id: i + 1, lesson: q[0], subject: Number(q[0][0]), text: q[1], options: q[2], answer: q[3], explanation: q[4], difficulty: i % 4 === 2 ? '응용' : '기본' }));
+export const questions = [...rawQuestions, ...additionalQuestions].map((q, i) => ({ id: i + 1, lesson: q[0], subject: Number(q[0][0]), text: q[1], options: q[2], answer: q[3], explanation: q[4], difficulty: i >= 26 ? '계산' : i % 4 === 2 ? '응용' : '기본' }));
