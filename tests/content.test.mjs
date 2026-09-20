@@ -63,10 +63,10 @@ test('Lessons have content, a valid official source, and practice questions', ()
 });
 
 test('All thirty existing question identities survive theory remapping and six questions cover new chapters', () => {
-  assert.equal(questions.length, 36);
+  assert.equal(questions.length, 37);
   const legacy = JSON.parse(readFileSync(new URL('./legacy-questions.json', import.meta.url), 'utf8'));
   assert.deepEqual(questions.slice(0,30).map(({lesson,...q})=>q), legacy);
-  assert.deepEqual(subjects.map(s=>questions.filter(q=>q.subject===s.id).length),[11,11,14]);
+  assert.deepEqual(subjects.map(s=>questions.filter(q=>q.subject===s.id).length),[12,11,14]);
   for (const lesson of lessons) assert.ok(questions.some(q=>q.lesson===lesson.id));
 });
 
@@ -81,7 +81,7 @@ test('Study supplements and plan link to available lessons and official sources'
     for (const key of note.sources) assert.ok(new URL(sources[key]).hostname.endsWith('.go.kr'));
     if (note.table) assert.ok(note.table.rows.every(row => row.length === note.table.headers.length));
     const html = renderStudyNotes(lesson);
-    assert.ok(html.includes(`href="#practice/${lesson.subject}"`));
+    assert.ok(html.includes(`href="#practice/${lesson.subject}/${lesson.id}"`));
     for (const example of note.calculations || []) {
       assert.ok(example.premise && example.formula && example.steps.length && example.result && example.note);
       assert.ok(html.includes(example.result) && html.includes('<details>'));
@@ -93,7 +93,7 @@ test('Material hub reports scope honestly, filters topics, and reflects existing
   const html = renderStudyMaterials({completed:['1-01','1-02'], answers:{1:1, 25:2}});
   assert.ok(html.includes(materialEdition.provenance));
   assert.ok(html.includes('이론 읽기 완료'));
-  assert.ok(html.includes('PART 01 문제 (2/11)'));
+  assert.ok(html.includes('PART 01 문제 (2/12)'));
   assert.ok(renderMaterialTopics('선금').includes('#theory/3/3-01'));
   assert.ok(renderMaterialTopics('  드론 ').includes('#theory/2/2-02'));
   assert.ok(renderMaterialTopics('MAS').includes('#theory/3/3-05'));
