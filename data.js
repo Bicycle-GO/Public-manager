@@ -1,5 +1,6 @@
 import { chapterLessons } from './chapter-content.js';
 import { lessonGuides } from './lesson-guides.js';
+import { overviewCoreQuestions } from './overview-questions.js';
 
 export const sources = {
   "subjects": "https://www.law.go.kr/flDownload.do?bylClsCd=110201&flSeq=155928887&gubun=",
@@ -625,7 +626,9 @@ export const questions = [
     "explanation": "정답은 ②번입니다. 현대적(광의) 공공조달은 필요한 물품·용역·공사를 확보하는 기능에 더해, 공공의 구매력을 환경 보호·사회적 가치·혁신 등의 정책목표 실현에 활용하는 활동입니다. ②는 재생용지 구매를 통해 환경적 가치와 사회적 가치를 함께 추구하므로 가장 적절합니다.",
     "difficulty": "핵심",
     "details": {
+      "conceptTitle": "개념 이해 · 협의와 광의",
       "concept": "이 문제는 조달의 목적이 얼마나 넓은지를 묻습니다. 전통적(협의) 관점은 필요한 물품·용역·공사를 경제적이고 효율적으로 확보하는 기능에 초점을 둡니다. 현대적(광의) 관점은 이 기능을 포함하면서 환경·고용·사회적 가치·혁신 등 공공정책의 성과까지 함께 고려합니다. 단순히 조달 절차가 길다는 뜻은 아닙니다.",
+      "steps": [["핵심 표현 찾기", "현대적·광의는 구매를 통한 정책목표 실현까지 포함한다는 뜻입니다."], ["보기의 목적 비교", "가격이나 반복 구매 방식보다 사회·환경적 가치가 명시되어 있는지 확인합니다."], ["가장 적절한 사례 선택", "재생용지와 사회적 기업 구매를 함께 제시한 ②가 가장 직접적으로 부합합니다."]],
       "choices": [
         {"title": "가격 중심의 구매", "reason": "가장 낮은 가격으로 사무용품을 확보하는 경제성에 초점이 있습니다. 구매 자체가 잘못이라는 뜻은 아니지만, 보기에는 사회·환경 등 정책목표가 드러나지 않아 광의의 정의를 가장 잘 보여주지는 못합니다."},
         {"title": "정답 · 구매와 정책목표의 결합", "reason": "재생용지는 자원 절약 등 환경적 가치와 연결되고, 사회적 기업의 제품 구매는 사회적 목적을 가진 기업의 판로를 지원합니다. 물품 확보와 사회·환경적 가치 실현이 함께 제시되어 있습니다."},
@@ -648,5 +651,6 @@ export const questions = [
         {"title": "조달청 계약방법 · 제한경쟁과 수의계약", "url": "https://www.pps.go.kr/kor/content.do?key=00723"}
       ]
     }
-  }
+  },
+  ...overviewCoreQuestions
 ];
