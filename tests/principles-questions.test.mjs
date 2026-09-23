@@ -9,7 +9,7 @@ test('Conversation 22–25 adds four stable IDs to chapter 02, preserving chapte
   assert.deepEqual(principlesCoreQuestions.map(q=>q.sourceNumber),[22,23,24,25]);
   assert.deepEqual(principlesCoreQuestions.map(q=>q.answer),[3,1,1,1]);
   assert.ok(principlesCoreQuestions.every(q=>q.lesson==='1-02' && q.subject===1 && q.core));
-  assert.equal(practiceQuestions(1,'1-02').length,8);
+  assert.equal(practiceQuestions(1,'1-02').length,51);
   assert.equal(practiceQuestions(1,'1-01').length,19);
   assert.equal(questions.filter(q=>q.id<=54).length,54);
 });
@@ -49,7 +49,7 @@ test('Source ambiguities and historical dates are explicit before grading and ex
 test('Only chapter 02 exposes its four-question action and keeps ordinary questions after core questions', () => {
   const html=renderPracticeGroups(1,findChapter(1,'1-02'),q=>`<article id="q${q.id}">${q.text}</article>`);
   assert.ok(html.includes('data-action="start-principles"'));
-  assert.ok(html.includes('8문항') && html.includes('22~25번'));
+  assert.ok(html.includes('51문항') && html.includes('22~25번'));
   assert.ok(!html.includes('start-overview'));
   const ordinary=practiceQuestions(1,'1-02').find(q=>!q.core);
   assert.ok(html.indexOf('id="q55"')<html.indexOf(`id="q${ordinary.id}"`));

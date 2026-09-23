@@ -44,9 +44,9 @@ test('All eighteen chapters provide examples, reasoning, comparison, and self-ch
 test('Every question has a valid answer, explanation, and matching theory link', () => {
   assert.equal(new Set(questions.map(q => q.id)).size, questions.length);
   for (const q of questions) {
-    assert.equal(q.options.length, 4);
-    assert.equal(new Set(q.options).size, 4);
-    assert.ok(Number.isInteger(q.answer) && q.answer >= 0 && q.answer < 4);
+    assert.equal(q.options.length, q.type === 'ox' ? 2 : 4);
+    assert.equal(new Set(q.options).size, q.options.length);
+    assert.ok(Number.isInteger(q.answer) && q.answer >= 0 && q.answer < q.options.length);
     assert.ok(q.explanation.length > 30);
     assert.ok(lessons.some(l => l.id === q.lesson && l.subject === q.subject));
   }
@@ -63,10 +63,10 @@ test('Lessons have content, a valid official source, and practice questions', ()
 });
 
 test('All thirty existing question identities survive theory remapping and six questions cover new chapters', () => {
-  assert.equal(questions.length, 58);
+  assert.equal(questions.length, 101);
   const legacy = JSON.parse(readFileSync(new URL('./legacy-questions.json', import.meta.url), 'utf8'));
   assert.deepEqual(questions.slice(0,30).map(({lesson,...q})=>q), legacy);
-  assert.deepEqual(subjects.map(s=>questions.filter(q=>q.subject===s.id).length),[33,11,14]);
+  assert.deepEqual(subjects.map(s=>questions.filter(q=>q.subject===s.id).length),[76,11,14]);
   for (const lesson of lessons) assert.ok(questions.some(q=>q.lesson===lesson.id));
 });
 
@@ -93,7 +93,7 @@ test('Material hub reports scope honestly, filters topics, and reflects existing
   const html = renderStudyMaterials({completed:['1-01','1-02'], answers:{1:1, 25:2}});
   assert.ok(html.includes(materialEdition.provenance));
   assert.ok(html.includes('이론 읽기 완료'));
-  assert.ok(html.includes('PART 01 문제 (2/33)'));
+  assert.ok(html.includes('PART 01 문제 (2/76)'));
   assert.ok(renderMaterialTopics('선금').includes('#theory/3/3-01'));
   assert.ok(renderMaterialTopics('  드론 ').includes('#theory/2/2-02'));
   assert.ok(renderMaterialTopics('MAS').includes('#theory/3/3-05'));

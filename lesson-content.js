@@ -1,12 +1,13 @@
 const escape = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 import { renderBasicPrinciples } from './basic-principles.js';
+import { renderProcurementMethods } from './procurement-methods.js';
 
 export function renderLessonGuide(lesson) {
   const g = lesson.guide;
   if (!g) return '';
   const text = escape;
-  return `${renderBasicPrinciples(lesson)}<div class="lesson-guide">
+  return `${renderBasicPrinciples(lesson)}${renderProcurementMethods(lesson)}<div class="lesson-guide">
     <section class="learning-goal"><h3>이 단원을 공부하면</h3><p>${text(g.goal)}</p></section>
     <section><h3>용어부터 쉽게 이해하기</h3><dl class="term-list">${g.terms.map(([term, definition])=>`<div><dt>${text(term)}</dt><dd>${text(definition)}</dd></div>`).join('')}</dl></section>
     <section class="case-study"><span class="case-label">가상 업무 사례</span><h3>${text(g.caseTitle)}</h3><p>${text(g.situation)}</p><h4>이렇게 판단해 보세요</h4><ol class="case-steps">${g.steps.map(([title,body])=>`<li><strong>${text(title)}</strong><p>${text(body)}</p></li>`).join('')}</ol></section>

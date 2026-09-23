@@ -26,7 +26,7 @@ test('Chapter status counts partition answered records and keep bookmarks indepe
   const html=renderPracticeStatus(chapter,state,'wrong');
   assert.ok(html.includes('href="#practice/1/1-02/wrong" aria-current="page"'));
   assert.equal((html.match(/aria-current/g)||[]).length,1);
-  assert.ok(renderPracticeDirectory(1,state).includes('풀이 완료 2 / 8'));
+  assert.ok(renderPracticeDirectory(1,state).includes('풀이 완료 2 / 51'));
   const filtered=renderPracticeGroups(1,chapter,q=>`<p data-id="${q.id}">question</p>`,questionsByStatus(list,state,'wrong'));
   assert.ok(filtered.includes(`data-id="${b.id}"`));
   assert.ok(!filtered.includes(`data-id="${a.id}"`));
