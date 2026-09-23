@@ -4,7 +4,7 @@ import { renderStudyMaterials, renderStudyNotes, renderMaterialTopics } from './
 import { curriculum, partLabel, chapterLabel, resolveLessonId, migrateStudyState } from './curriculum.js';
 import { renderCurriculumOutline, renderChapterNavigation, renderPartDirectory, chapterUrl } from './curriculum-ui.js';
 
-import { findChapter, practiceQuestions, renderChapterFilter, renderPracticeGroups, renderQuestionExplanation, renderQuestionContext } from './practice-ui.js';
+import { findChapter, practiceQuestions, questionsByStatus, practiceStatuses, renderPracticeDirectory, renderPracticeStatus, renderPracticeNavigation, renderChapterFilter, renderPracticeGroups, renderQuestionExplanation, renderQuestionContext } from './practice-ui.js';
 
 const paths = {
  book: '<path d="M12 5c-3-2-6-2-9-1v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1Z"/><path d="M12 5v15"/>',
@@ -46,7 +46,7 @@ try {
 } catch { /* Start fresh if storage is unavailable or invalid. */ }
 let page = 'dashboard', filter = 0, query = '', quiz = null, selected = null, revealed = false;
 let examInterval;
-let activeLesson = null, practiceChapter = null;
+let activeLesson = null, practiceChapter = null, practiceStatus = 'all';
 const save = () => { try { localStorage.setItem('jodalon-v1', JSON.stringify(state)); } catch { toast('저장 공간을 사용할 수 없어 이번 학습은 새로고침 시 사라질 수 있습니다.'); } };
 const touch = () => { state.activity[day()] = (state.activity[day()] || 0) + 1; };
 const answerCount = () => Object.keys(state.answers).length;
@@ -107,7 +107,7 @@ function tabs() { return `<div class="tabs" role="group" aria-label="과목 선�
 function subjectOverview(kind) {
  const isTheory=kind==='theory';
  if(isTheory) return head('VOLUME 01 · THEORY',curriculum.title,'공부할 PART를 선택하세요. 각 PART의 목차와 본문을 별도 페이지에서 학습합니다.')+renderPartDirectory(state.completed);
- return head(isTheory?'SUBJECT LIBRARY':'QUESTION BANK',isTheory?'과목별 기본이론':'과목별 예상문제',isTheory?'공부할 과목을 선택하세요. 과목별 페이지에서 단원을 순서대로 읽을 수 있습니다.':'연습할 과목을 선택하세요. 이론과 분리된 문제 페이지에서 집중해서 풀어보세요.')+
+ return head(isTheory?'SUBJECT LIBRARY':'QUESTION BANK',isTheory?'과목별 기본이론':'PART별 예상문제',isTheory?'공부할 과목을 선택하세요. 과목별 페이지에서 단원을 순서대로 읽을 수 있습니다.':'PART를 선택한 뒤 CHAPTER별 문제 관리 페이지에서 학습하세요.')+
  '<div class="subject-library">'+subjects.map(s=>{
  const count=isTheory?lessons.filter(l=>l.subject===s.id).length:questions.filter(q=>q.subject===s.id).length;
  return '<a class="card library-card" href="#'+kind+'/'+s.id+'"><span class="subject-icon '+s.color+'">'+icon(s.icon)+'</span><div><span class="subject-label">PART 0'+s.id+'</span><h2>'+s.title+'</h2><p>'+s.desc+'</p><span class="library-meta">'+(isTheory?'기본이론 '+count+'단원':'예상문제 '+count+'문항 · 정답 및 해설')+'</span></div><span class="library-open">'+(isTheory?'이론 학습하기':'문제 보러 가기')+' '+icon('arrow')+'</span></a>';
@@ -141,10 +141,12 @@ function lessonList() {
 }
 function practice() {
  if (!filter) return subjectOverview('practice');
- const filtered = practiceQuestions(filter, practiceChapter?.id);
- const title = practiceChapter ? chapterLabel(practiceChapter.chapter)+' '+practiceChapter.title : partLabel(filter)+' · 예상문제';
- const subtitle = practiceChapter ? partLabel(filter)+' · '+subjects[filter-1].title : subjects[filter-1].title+' · CHAPTER별로 문제를 풀고 해설을 확인하세요.';
- return head('QUESTION BANK',title,subtitle,'<button class="button" data-action="start-filtered">'+icon('pen')+' '+(practiceChapter?'이 CHAPTER':'이 PART')+' '+filtered.length+'문항 풀기</button>')+'<div class="notice-line">'+icon('info')+' 학습용 연습문항 '+filtered.length+'개입니다. 핵심문제는 정답 확인 후 보기별 해설과 사례를 제공합니다.</div>'+tabs()+renderChapterFilter(filter,practiceChapter)+(practiceChapter?'<a class="practice-theory-link" href="'+chapterUrl(practiceChapter)+'">이 CHAPTER의 기본이론 읽기 →</a>':'')+renderPracticeGroups(filter,practiceChapter,questionRow);
+ const all = practiceQuestions(filter, practiceChapter?.id);
+ if (!practiceChapter) return head('QUESTION BANK',partLabel(filter)+' · CHAPTER별 문제 관리',subjects[filter-1].title+' · 단원을 선택해 문제와 학습 현황을 관리하세요.','<a class="soft-button" href="#practice">PART 선택으로</a>')+tabs()+'<p class="practice-status-note">'+lessons.filter(l=>l.subject===filter).length+'개 CHAPTER · 총 '+all.length+'문항 · 풀이 기록은 이 브라우저에 저장됩니다.</p>'+renderPracticeDirectory(filter,state);
+ const visible = questionsByStatus(all,state,practiceStatus);
+ const statusLabel = practiceStatuses.find(([key])=>key===practiceStatus)[1];
+ const action = '<button class="button" data-action="start-filtered" '+(!visible.length?'disabled':'')+'>'+icon('pen')+' '+(practiceStatus==='all'?'이 CHAPTER':statusLabel)+' '+visible.length+'문항 풀기</button>';
+ return renderPracticeNavigation(practiceChapter)+head('QUESTION BANK',chapterLabel(practiceChapter.chapter)+' '+practiceChapter.title,partLabel(filter)+' · '+subjects[filter-1].title+' · 총 '+all.length+'문항',action)+tabs()+renderChapterFilter(filter,practiceChapter)+'<a class="practice-theory-link" href="'+chapterUrl(practiceChapter)+'">이 CHAPTER의 기본이론 읽기 →</a>'+renderPracticeStatus(practiceChapter,state,practiceStatus)+(visible.length?renderPracticeGroups(filter,practiceChapter,questionRow,visible):empty('check',statusLabel+' 문제가 없습니다','다른 상태를 선택하거나 전체 문제를 확인하세요.','<a class="button" href="#practice/'+filter+'/'+practiceChapter.id+'">전체 문제 보기 →</a>'));
 }
 function questionRow(q) {
  const answered = state.answers[q.id] !== undefined;
@@ -161,7 +163,7 @@ function mock() {
  return `${head('CHECK YOUR READINESS','실력을 점검하는, 미니 모의고사','시간 안에 문제를 풀고 과목별 결과로 다음 학습 방향을 찾아보세요.')}<div class="mock-layout"><section class="card mock-intro"><span class="large-icon">${icon('clock')}</span><span class="eyebrow">MINI MOCK EXAM</span><h2>나의 현재 실력은 어느 정도일까요?</h2><p>3개 과목에서 무작위로 4문제씩 출제됩니다.<br>시험이 끝나면 채점 결과와 해설을 확인할 수 있어요.</p><div class="mock-facts"><div><strong>12<span>문제</span></strong><small>과목별 4문제</small></div><div><strong>15<span>분</span></strong><small>제한 시간</small></div><div><strong>3<span>과목</span></strong><small>기본 개념 점검</small></div></div><button class="button" data-action="start-exam">미니 모의고사 시작 ${icon('arrow')}</button><small class="mock-note">학습용 ${questions.length}문항에서 출제되며 실제 시험 구성·난도와 다릅니다.</small></section><section class="card exam-history"><h2>${icon('chart')} 최근 응시 기록</h2>${state.exams.length ? state.exams.slice(-5).reverse().map(e=>`<div class="history-row"><div><strong>${new Date(e.date).toLocaleDateString('ko-KR')}</strong><small>${e.correct} / ${e.total}문제 정답</small></div><b>${Math.round(e.correct/e.total*100)}<small>점</small></b></div>`).join('') : `<div class="history-empty">${icon('file')}<p>아직 응시 기록이 없어요.<br>첫 모의고사에 도전해 보세요.</p></div>`}</section></div>`;
 }
 function info() {
- return `${head('YOUR EXAM GUIDE','시험 안내 · 학습 자료','공식 정보로 준비하고, 검증된 자료로 학습의 깊이를 더하세요.')}<section class="card info-intro"><span class="exam-badge">국가기술자격</span><h2>공공조달관리사</h2><p>공공조달 전 과정에 대한 전문지식과 실무능력을 검증하는 자격입니다. 원서접수, 시험 일정, 출제기준은 큐넷에서 최신 공고를 확인하세요.</p>${external(sources.exam,'정부 공식 시험 안내')}${external(sources.qnet,'큐넷 바로가기')}</section><div class="info-grid"><section class="card info-box"><h2>${icon('book')} 필기 학습 과목</h2>${subjects.map(s=>`<p><span class="subject-label">제${s.id}과목</span> ${s.title}</p>`).join('')}<p class="muted">실기 과목: 공공조달관리 실무</p>${external(sources.subjects,'국가기술자격법 시행규칙 · 시험과목')}</section><section class="card info-box"><h2>${icon('building')} 공식 자료실</h2>${external(sources.pps,'공공조달역량개발원 · 표준교재')}${external(sources.law,'국가계약법 · 국가법령정보센터')}${external(sources.local,'지방계약법 · 국가법령정보센터')}${external(sources.qnet,'큐넷 · 시험 공고 및 출제기준')}</section></div><section class="card info-box"><h2>이 학습 공간의 콘텐츠 안내</h2><a href="#materials">필기 핵심 학습자료 · 14일 계획 보기 →</a><p>제1편 공공조달관리사 필기를 3개 PART·${lessons.length}개 CHAPTER로 구성하고 심화 정리·비교표·계산 예제를 더해 학습용 연습문제 ${questions.length}개로 구성한 학습 공간입니다. 공식 기출문제나 전체 출제범위를 대체하는 교재가 아니며, 합격을 보장하지 않습니다. 과목 구성은 공식 법령 자료를 참고했고, 이론과 해설은 기본 개념을 학습하기 위해 자체 작성했습니다.</p><p>법령상 금액, 기한과 세부 예외는 개정될 수 있어 이 콘텐츠에서는 구체적 수치 암기보다 개념 이해를 중심으로 다룹니다. 응시 전 최신 법령, 큐넷 출제기준과 표준교재를 함께 확인해 주세요. 웹 학습자료 업데이트: 2026. 9. 20. 추가 자료의 반영 범위는 학습자료 페이지에서 확인할 수 있습니다.</p><p>학습 진도, 최근 답안, 북마크와 모의고사 기록은 이 브라우저에만 저장됩니다. 다른 기기와 동기화되지 않으며 브라우저 데이터 삭제 시 지워집니다.</p><button class="soft-button" data-action="export">${icon('file')} 학습 기록 내보내기</button></section>`;
+ return `${head('YOUR EXAM GUIDE','시험 안내 · 학습 자료','공식 정보로 준비하고, 검증된 자료로 학습의 깊이를 더하세요.')}<section class="card info-intro"><span class="exam-badge">국가기술자격</span><h2>공공조달관리사</h2><p>공공조달 전 과정에 대한 전문지식과 실무능력을 검증하는 자격입니다. 원서접수, 시험 일정, 출제기준은 큐넷에서 최신 공고를 확인하세요.</p>${external(sources.exam,'정부 공식 시험 안내')}${external(sources.qnet,'큐넷 바로가기')}</section><div class="info-grid"><section class="card info-box"><h2>${icon('book')} 필기 학습 과목</h2>${subjects.map(s=>`<p><span class="subject-label">제${s.id}과목</span> ${s.title}</p>`).join('')}<p class="muted">실기 과목: 공공조달관리 실무</p>${external(sources.subjects,'국가기술자격법 시행규칙 · 시험과목')}</section><section class="card info-box"><h2>${icon('building')} 공식 자료실</h2>${external(sources.pps,'공공조달역량개발원 · 표준교재')}${external(sources.law,'국가계약법 · 국가법령정보센터')}${external(sources.local,'지방계약법 · 국가법령정보센터')}${external(sources.qnet,'큐넷 · 시험 공고 및 출제기준')}</section></div><section class="card info-box"><h2>이 학습 공간의 콘텐츠 안내</h2><a href="#materials">필기 핵심 학습자료 · 14일 계획 보기 →</a><p>제1편 공공조달관리사 필기를 3개 PART·${lessons.length}개 CHAPTER로 구성하고 심화 정리·비교표·계산 예제를 더해 학습용 연습문제 ${questions.length}개로 구성한 학습 공간입니다. 공식 기출문제나 전체 출제범위를 대체하는 교재가 아니며, 합격을 보장하지 않습니다. 과목 구성은 공식 법령 자료를 참고했고, 이론과 해설은 기본 개념을 학습하기 위해 자체 작성했습니다.</p><p>법령상 금액, 기한과 세부 예외는 개정될 수 있어 이 콘텐츠에서는 구체적 수치 암기보다 개념 이해를 중심으로 다룹니다. 응시 전 최신 법령, 큐넷 출제기준과 표준교재를 함께 확인해 주세요. 웹 학습자료 업데이트: 2026. 9. 23. 추가 자료의 반영 범위는 학습자료 페이지에서 확인할 수 있습니다.</p><p>학습 진도, 최근 답안, 북마크와 모의고사 기록은 이 브라우저에만 저장됩니다. 다른 기기와 동기화되지 않으며 브라우저 데이터 삭제 시 지워집니다.</p><button class="soft-button" data-action="export">${icon('file')} 학습 기록 내보내기</button></section>`;
 }
 function openLessonModal(id) {
  const l = lessons.find(l=>l.id===id); if (!l) return;
@@ -201,7 +203,7 @@ function finishQuiz() {
  const answered = result.mode==='exam' ? result.list : result.list.filter(q=>result.checked[q.id]);
  const correct = answered.filter(q=>result.answers[q.id]===q.answer).length;
  quiz = null; shell();
- document.querySelector('#main').innerHTML = `${head('ONE STEP FORWARD','오늘도 한 걸음 성장했어요','결과를 돌아보고, 헷갈린 개념을 다시 확인해 보세요.')}<section class="card result-card"><span class="large-icon">${icon('trophy')}</span><h2>학습을 완료했어요!</h2><div class="result-score">${answered.length?Math.round(correct/answered.length*100):0}<span>점</span></div><p>${answered.length}문제 중 <strong>${correct}문제 정답</strong> · ${result.mode === 'exam' ? result.list.filter(q => result.answers[q.id] === undefined).length : result.list.length-answered.length}문제 ${result.mode === 'exam' ? '미응답' : '미완료'}</p><div class="subject-results">${subjects.filter(s=>answered.some(q=>q.subject===s.id)).map(s=>{const all=answered.filter(q=>q.subject===s.id),right=all.filter(q=>result.answers[q.id]===q.answer).length;return `<div><span>${s.short}</span><div class="progress-track"><span style="width:${right/all.length*100}%"></span></div><strong>${right}/${all.length}</strong></div>`;}).join('')}</div><div class="result-actions"><a href="#wrong" class="soft-button" data-action="navigate" data-page="wrong">오답노트 보기</a><button class="button" data-action="navigate" data-page="dashboard">대시보드로 ${icon('arrow')}</button></div></section><section class="section"><h2>문제별 해설</h2>${answered.map(q=>`<article class="card result-explanation"><span class="answer-status ${result.answers[q.id]===q.answer?'correct':'incorrect'}">${result.answers[q.id]===q.answer?'정답':'오답'}</span><h3>${q.text}</h3>${renderQuestionContext(q)}<p>내 답: ${result.answers[q.id]===undefined || result.answers[q.id]===-1?'미응답':q.options[result.answers[q.id]]}<br><strong>정답: ${q.options[q.answer]}</strong></p>${renderQuestionExplanation(q)}<button class="text-button" data-action="lesson" data-id="${q.lesson}">관련 이론 보기 ${icon('arrow')}</button></article>`).join('')}</section>`;
+ document.querySelector('#main').innerHTML = `${head('ONE STEP FORWARD','오늘도 한 걸음 성장했어요','결과를 돌아보고, 헷갈린 개념을 다시 확인해 보세요.')}<section class="card result-card"><span class="large-icon">${icon('trophy')}</span><h2>학습을 완료했어요!</h2><div class="result-score">${answered.length?Math.round(correct/answered.length*100):0}<span>점</span></div><p>${answered.length}문제 중 <strong>${correct}문제 정답</strong> · ${result.mode === 'exam' ? result.list.filter(q => result.answers[q.id] === undefined).length : result.list.length-answered.length}문제 ${result.mode === 'exam' ? '미응답' : '미완료'}</p><div class="subject-results">${subjects.filter(s=>answered.some(q=>q.subject===s.id)).map(s=>{const all=answered.filter(q=>q.subject===s.id),right=all.filter(q=>result.answers[q.id]===q.answer).length;return `<div><span>${s.short}</span><div class="progress-track"><span style="width:${right/all.length*100}%"></span></div><strong>${right}/${all.length}</strong></div>`;}).join('')}</div><div class="result-actions">${result.list.every(q=>q.lesson===result.list[0].lesson)?'<a class="soft-button" data-action="navigate" data-page="practice/'+result.list[0].subject+'/'+result.list[0].lesson+'" href="#practice/'+result.list[0].subject+'/'+result.list[0].lesson+'">이 CHAPTER 문제 관리로</a>':''}<a href="#wrong" class="soft-button" data-action="navigate" data-page="wrong">오답노트 보기</a><button class="button" data-action="navigate" data-page="dashboard">대시보드로 ${icon('arrow')}</button></div></section><section class="section"><h2>문제별 해설</h2>${answered.map(q=>`<article class="card result-explanation"><span class="answer-status ${result.answers[q.id]===q.answer?'correct':'incorrect'}">${result.answers[q.id]===q.answer?'정답':'오답'}</span><h3>${q.text}</h3>${renderQuestionContext(q)}<p>내 답: ${result.answers[q.id]===undefined || result.answers[q.id]===-1?'미응답':q.options[result.answers[q.id]]}<br><strong>정답: ${q.options[q.answer]}</strong></p>${renderQuestionExplanation(q)}<button class="text-button" data-action="lesson" data-id="${q.lesson}">관련 이론 보기 ${icon('arrow')}</button></article>`).join('')}</section>`;
  window.scrollTo(0,0);
 }
 function toast(message) { const el=document.querySelector('#toast'); el.textContent=message; el.classList.add('show'); clearTimeout(toast.timer); toast.timer=setTimeout(()=>el.classList.remove('show'),3500); }
@@ -232,7 +234,8 @@ document.addEventListener('click',event=>{
  if(action==='lesson-quiz'){const l=lessons.find(l=>l.id===id);if(l)go('practice/'+l.subject+'/'+l.id);}
  if(action==='single-question') startQuiz([questions.find(q=>q.id===Number(id))]);
  if(action==='start-overview') startQuiz(questions.filter(q=>q.lesson==='1-01' && q.sourceNumber));
- if(action==='start-filtered'){const list=practiceQuestions(filter,practiceChapter?.id);startQuiz([...list.filter(q=>q.core),...list.filter(q=>!q.core)]);}
+ if(action==='start-principles') startQuiz(questions.filter(q=>q.lesson==='1-02' && q.sourceNumber>=22 && q.sourceNumber<=25));
+ if(action==='start-filtered'){const list=questionsByStatus(practiceQuestions(filter,practiceChapter?.id),state,practiceStatus);startQuiz([...list.filter(q=>q.core),...list.filter(q=>!q.core)]);}
  if(action==='quick-quiz') startQuiz(shuffled(questions).slice(0,5));
  if(action==='review-wrong') startQuiz(wrongQuestions());
  if(action==='review-saved') startQuiz(questions.filter(q=>state.bookmarks.includes('q'+q.id)));
@@ -256,11 +259,12 @@ document.addEventListener('input',event=>{if(event.target.id==='material-search'
 document.addEventListener('change',event=>{if(event.target.id==='practice-chapter')go('practice/'+filter+(event.target.value?'/'+event.target.value:''));});
 document.addEventListener('submit',event=>{if(event.target.id==='goal-form'){event.preventDefault();state.goal=Number(new FormData(event.target).get('goal'));save();document.querySelector('#modal').close();render();toast('새 학습 목표를 저장했어요.');}});
 function route(){
- const [requested, subjectId, lessonId] = location.hash.slice(1).split('/');
+ const [requested, subjectId, lessonId, statusId] = location.hash.slice(1).split('/');
  page=[...navItems.map(n=>n[0]),'info'].includes(requested)?requested:'dashboard';
  filter=['theory','practice'].includes(page) && subjects.some(s=>s.id===Number(subjectId)) ? Number(subjectId) : 0;
  activeLesson=page==='theory' && filter ? findChapter(filter,lessonId) : null;
  practiceChapter=page==='practice' && filter ? findChapter(filter,lessonId) : null;
+ practiceStatus=practiceChapter && practiceStatuses.some(([key])=>key===statusId) ? statusId : 'all';
  if(activeLesson){state.lastLesson=activeLesson.id;save();}
  const routedChapter=activeLesson || practiceChapter;
  if(routedChapter && lessonId!==routedChapter.id) history.replaceState(null,'','#'+page+'/'+filter+'/'+routedChapter.id);
