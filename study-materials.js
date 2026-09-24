@@ -1,4 +1,6 @@
 import { procurementMethodTopics } from './procurement-methods.js';
+import { electronicTopics } from './electronic-procurement.js';
+import { strategicTopics } from './strategic-procurement.js';
 
 export const materialEdition = {
   "updated": "2026. 9. 24.",
@@ -228,6 +230,7 @@ export const studyNotes = {
     ]
   },
   "1-03": {
+    "searchTopics": electronicTopics,
     "topics": [
       [
         "공고부터 전자계약까지",
@@ -245,6 +248,7 @@ export const studyNotes = {
     ]
   },
   "1-04": {
+    "searchTopics": strategicTopics,
     "topics": [
       [
         "생애주기 관점의 전략",

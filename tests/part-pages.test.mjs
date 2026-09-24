@@ -30,7 +30,7 @@ test('Chapter question lists exclude other chapters and group the new core quest
   const chapter = findChapter(1, '1-01');
   const list = practiceQuestions(1, chapter.id);
   assert.deepEqual(list.map(q => q.id), [31, 37, ...Array.from({length:17},(_,i)=>38+i)]);
-  assert.equal(practiceQuestions(1).length, 76);
+  assert.equal(practiceQuestions(1).length, 126);
   assert.equal(practiceQuestions(2, chapter.id).length, 0);
   const html = renderPracticeGroups(1, chapter, q => `<article id="q${q.id}">${q.text}</article>`);
   assert.ok(html.includes('단원별 핵심문제'));

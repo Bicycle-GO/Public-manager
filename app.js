@@ -4,7 +4,7 @@ import { renderStudyMaterials, renderStudyNotes, renderMaterialTopics } from './
 import { curriculum, partLabel, chapterLabel, resolveLessonId, migrateStudyState } from './curriculum.js';
 import { renderCurriculumOutline, renderChapterNavigation, renderPartDirectory, chapterUrl } from './curriculum-ui.js';
 
-import { findChapter, practiceQuestions, questionsByStatus, practiceStatuses, renderPracticeDirectory, renderPracticeStatus, renderPracticeNavigation, renderChapterFilter, renderPracticeGroups, renderQuestionExplanation, renderQuestionContext, questionLabel, answerLabel, attachmentQuestions } from './practice-ui.js';
+import { findChapter, practiceQuestions, questionsByStatus, practiceStatuses, renderPracticeDirectory, renderPracticeStatus, renderPracticeNavigation, renderChapterFilter, renderPracticeGroups, renderQuestionExplanation, renderQuestionContext, questionLabel, answerLabel, attachmentQuestions, electronicQuestions, strategicQuestions } from './practice-ui.js';
 
 const paths = {
  book: '<path d="M12 5c-3-2-6-2-9-1v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1Z"/><path d="M12 5v15"/>',
@@ -151,7 +151,7 @@ function practice() {
 function questionRow(q) {
  const answered = state.answers[q.id] !== undefined;
  const correct = state.answers[q.id]===q.answer;
- return `<article class="question-row card"><span class="question-index">${q.attachmentNumber ? '<small>'+ (q.type==='ox'?'OX':'첨부')+'</small>'+String(q.attachmentNumber).padStart(2,'0') : q.sourceNumber ? '<small>대화</small>'+String(q.sourceNumber).padStart(2,'0') : String(q.id).padStart(2,'0')}</span><button class="question-title" data-action="single-question" data-id="${q.id}"><div><span class="subject-label">제${q.subject}과목</span><span class="difficulty">${q.type==='ox'?'OX 문제':q.core?'단원별 핵심문제':q.difficulty}</span>${answered ? `<span class="answer-status ${correct?'correct':'incorrect'}">${correct?'정답':'복습 필요'}</span>` : ''}</div><h3>${q.text}</h3>${q.adapted?'<span class="adapted-badge">학습용 보정 · 해설에서 확인</span>':''}<p>${chapterLabel(lessons.find(l=>l.id===q.lesson).chapter)} · ${lessons.find(l=>l.id===q.lesson).title}</p></button><button class="icon-button ${state.bookmarks.includes('q'+q.id)?'bookmarked':''}" data-action="bookmark-question" data-id="${q.id}" aria-label="${esc(questionLabel(q))} 문제 북마크" aria-pressed="${state.bookmarks.includes('q'+q.id)}">${icon('bookmark')}</button><button class="round-arrow" data-action="single-question" data-id="${q.id}" aria-label="${esc(questionLabel(q))} 문제 풀기">${icon('arrow')}</button></article>`;
+ return `<article class="question-row card"><span class="question-index">${q.providedNumber ? '<small>자료</small>'+String(q.providedNumber).padStart(2,'0') : q.attachmentNumber ? '<small>'+ (q.type==='ox'?'OX':'첨부')+'</small>'+String(q.attachmentNumber).padStart(2,'0') : q.sourceNumber ? '<small>대화</small>'+String(q.sourceNumber).padStart(2,'0') : String(q.id).padStart(2,'0')}</span><button class="question-title" data-action="single-question" data-id="${q.id}"><div><span class="subject-label">제${q.subject}과목</span><span class="difficulty">${q.type==='ox'?'OX 문제':q.core?'단원별 핵심문제':q.difficulty}</span>${answered ? `<span class="answer-status ${correct?'correct':'incorrect'}">${correct?'정답':'복습 필요'}</span>` : ''}</div><h3>${q.text}</h3>${q.adapted?'<span class="adapted-badge">학습용 보정 · 해설에서 확인</span>':''}<p>${chapterLabel(lessons.find(l=>l.id===q.lesson).chapter)} · ${lessons.find(l=>l.id===q.lesson).title}</p></button><button class="icon-button ${state.bookmarks.includes('q'+q.id)?'bookmarked':''}" data-action="bookmark-question" data-id="${q.id}" aria-label="${esc(questionLabel(q))} 문제 북마크" aria-pressed="${state.bookmarks.includes('q'+q.id)}">${icon('bookmark')}</button><button class="round-arrow" data-action="single-question" data-id="${q.id}" aria-label="${esc(questionLabel(q))} 문제 풀기">${icon('arrow')}</button></article>`;
 }
 function empty(i,title,desc,button='<a class="button" href="#practice">예상문제 풀기 '+icon('arrow')+'</a>') { return `<div class="empty card"><span class="empty-icon">${icon(i)}</span><h2>${title}</h2><p>${desc}</p>${button}</div>`; }
 function review(saved) {
@@ -236,6 +236,8 @@ document.addEventListener('click',event=>{
  if(action==='start-overview') startQuiz(questions.filter(q=>q.lesson==='1-01' && q.sourceNumber));
  if(action==='start-chapter02-expected') startQuiz(attachmentQuestions('multiple'));
  if(action==='start-chapter02-ox') startQuiz(attachmentQuestions('ox'));
+ if(action==='start-chapter03') startQuiz(electronicQuestions());
+ if(action==='start-chapter04') startQuiz(strategicQuestions());
  if(action==='start-principles') startQuiz(questions.filter(q=>q.lesson==='1-02' && q.sourceNumber>=22 && q.sourceNumber<=25));
  if(action==='start-filtered'){const list=questionsByStatus(practiceQuestions(filter,practiceChapter?.id),state,practiceStatus);startQuiz([...list.filter(q=>q.core),...list.filter(q=>!q.core)]);}
  if(action==='quick-quiz') startQuiz(shuffled(questions).slice(0,5));

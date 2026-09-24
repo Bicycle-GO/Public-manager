@@ -3,6 +3,8 @@ import { lessonGuides } from './lesson-guides.js';
 import { overviewCoreQuestions } from './overview-questions.js';
 import { principlesCoreQuestions } from './principles-questions.js';
 import { chapter02AttachmentQuestions } from './chapter02-questions.js';
+import { chapter03Questions } from './chapter03-questions.js';
+import { chapter04Questions } from './chapter04-questions.js';
 
 export const sources = {
   "subjects": "https://www.law.go.kr/flDownload.do?bylClsCd=110201&flSeq=155928887&gubun=",
@@ -656,5 +658,7 @@ export const questions = [
   },
   ...overviewCoreQuestions,
   ...principlesCoreQuestions,
-  ...chapter02AttachmentQuestions
+  ...chapter02AttachmentQuestions,
+  ...chapter03Questions,
+  ...chapter04Questions
 ];

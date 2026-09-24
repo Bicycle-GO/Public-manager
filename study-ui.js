@@ -22,9 +22,9 @@ export function renderStudyNotes(lesson) {
 
 export function renderMaterialTopics(search = '') {
   const needle = search.trim().toLocaleLowerCase('ko-KR');
-  const matches = lessons.filter(l => [l.title, l.summary, ...l.sections.flat(), ...l.guide.terms.flat(), ...studyNotes[l.id].topics.flat(), ...(studyNotes[l.id].calculations || []).map(c => c.title), studyNotes[l.id].table?.title || ''].join(' ').toLocaleLowerCase('ko-KR').includes(needle));
+  const matches = lessons.filter(l => [l.title, l.summary, ...l.sections.flat(), ...l.guide.terms.flat(), ...studyNotes[l.id].topics.flat(), ...(studyNotes[l.id].searchTopics || []).flat(), ...(studyNotes[l.id].calculations || []).map(c => c.title), studyNotes[l.id].table?.title || ''].join(' ').toLocaleLowerCase('ko-KR').includes(needle));
   if (!matches.length) return '<p class="material-empty" role="status">일치하는 단원이 없습니다. 다른 용어로 검색해 보세요.</p>';
-  return `<p class="material-result-count" role="status">${matches.length}개 단원${needle ? ` · “${esc(search.trim())}” 검색 결과` : ''}</p><div class="material-topic-grid">${matches.map(l => `<a class="material-topic" href="${lessonLink(l.id)}"><span class="subject-label">${partLabel(l.subject)} · ${chapterLabel(l.chapter)}</span><h3>${esc(l.title)}</h3><p>${studyNotes[l.id].topics.map(([title]) => esc(title)).join(' · ')}</p><span class="material-topic-meta">${studyNotes[l.id].table ? '비교표 · ' : ''}${studyNotes[l.id].calculations ? `계산 ${studyNotes[l.id].calculations.length}개 · ` : ''}이론 읽기 →</span></a>`).join('')}</div>`;
+  return `<p class="material-result-count" role="status">${matches.length}개 단원${needle ? ` · “${esc(search.trim())}” 검색 결과` : ''}</p><div class="material-topic-grid">${matches.map(l => `<a class="material-topic" href="${lessonLink(l.id)}"><span class="subject-label">${partLabel(l.subject)} · ${chapterLabel(l.chapter)}</span><h3>${esc(l.title)}</h3><p>${studyNotes[l.id].searchTopics ? esc(l.summary) : studyNotes[l.id].topics.map(([title]) => esc(title)).join(' · ')}</p><span class="material-topic-meta">${studyNotes[l.id].table ? '비교표 · ' : ''}${studyNotes[l.id].calculations ? `계산 ${studyNotes[l.id].calculations.length}개 · ` : ''}이론 읽기 →</span></a>`).join('')}</div>`;
 }
 
 export function renderStudyMaterials(state) {
