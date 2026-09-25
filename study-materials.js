@@ -1,9 +1,14 @@
 import { procurementMethodTopics } from './procurement-methods.js';
 import { electronicTopics } from './electronic-procurement.js';
 import { strategicTopics } from './strategic-procurement.js';
+import { bidTopics } from './bid-execution.js';
+import { law1FollowupTopics } from './law1-followup.js';
+import { law2FollowupTopics } from './law2-followup.js';
+import { planningFollowupTopics } from './planning-followup.js';
+import { proposalFollowupTopics } from './proposal-followup.js';
 
 export const materialEdition = {
-  "updated": "2026. 9. 24.",
+  "updated": "2026. 9. 25.",
   "title": "제1편 공공조달관리사 필기",
   "provenance": "사용자가 지정한 3개 PART·18개 CHAPTER 목차에 따라 기존 웹 학습자료를 재배치하고 내용을 보강했습니다. 이전 대화의 목차·요약을 참고한 자체 작성 자료이며 PDF·Word 원문이나 공식 기출문제를 그대로 옮긴 자료는 아닙니다."
 };
@@ -292,6 +297,7 @@ export const studyNotes = {
     ]
   },
   "1-05": {
+    "searchTopics": law1FollowupTopics,
     "topics": [
       [
         "법령과 계약문서의 역할",
@@ -311,6 +317,7 @@ export const studyNotes = {
     ]
   },
   "1-06": {
+    "searchTopics": law2FollowupTopics,
     "topics": [
       [
         "제재와 계약상 책임 구별하기",
@@ -334,6 +341,7 @@ export const studyNotes = {
     ]
   },
   "2-01": {
+    "searchTopics": planningFollowupTopics,
     "topics": [
       [
         "수요조사와 시장조사의 질문",
@@ -430,6 +438,7 @@ export const studyNotes = {
     ]
   },
   "2-02": {
+    "searchTopics": proposalFollowupTopics,
     "topics": [
       [
         "가상 사례: 드론 촬영·정사영상 제작",
@@ -447,6 +456,7 @@ export const studyNotes = {
     ]
   },
   "2-03": {
+    "searchTopics": bidTopics,
     "topics": [
       [
         "입찰의 유효성 확인",

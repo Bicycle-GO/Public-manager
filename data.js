@@ -5,6 +5,11 @@ import { principlesCoreQuestions } from './principles-questions.js';
 import { chapter02AttachmentQuestions } from './chapter02-questions.js';
 import { chapter03Questions } from './chapter03-questions.js';
 import { chapter04Questions } from './chapter04-questions.js';
+import { bidExecutionQuestions } from './bid-execution-questions.js';
+import { law1FollowupQuestions } from './law1-followup.js';
+import { law2FollowupQuestions } from './law2-followup.js';
+import { planningFollowupQuestions } from './planning-followup.js';
+import { proposalFollowupQuestions } from './proposal-followup.js';
 
 export const sources = {
   "subjects": "https://www.law.go.kr/flDownload.do?bylClsCd=110201&flSeq=155928887&gubun=",
@@ -660,5 +665,10 @@ export const questions = [
   ...principlesCoreQuestions,
   ...chapter02AttachmentQuestions,
   ...chapter03Questions,
-  ...chapter04Questions
+  ...chapter04Questions,
+  ...bidExecutionQuestions,
+  ...law1FollowupQuestions,
+  ...law2FollowupQuestions,
+  ...planningFollowupQuestions,
+  ...proposalFollowupQuestions
 ];

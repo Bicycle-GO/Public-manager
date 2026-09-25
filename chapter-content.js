@@ -101,8 +101,8 @@ export const chapterLessons = [
     "subject": 1,
     "chapter": 5,
     "title": "공공조달 핵심 법령1",
-    "summary": "국가계약·지방계약 법령과 하위 규정의 적용 체계",
-    "minutes": 22,
+    "summary": "전자문서·계약 성립·보증·선금·지체상금·분쟁조정과 핵심 25문항",
+    "minutes": 45,
     "sections": [
       [
         "먼저 계약의 주체를 확인",
@@ -125,8 +125,8 @@ export const chapterLessons = [
     "subject": 1,
     "chapter": 6,
     "title": "공공조달 핵심 법령2 및 공정조달",
-    "summary": "민법상 계약, 청렴·이해충돌, 제재와 권리구제",
-    "minutes": 22,
+    "summary": "조달사업·기관별 계약규정·공정조달·제재·권리구제와 핵심 25문항",
+    "minutes": 45,
     "sections": [
       [
         "민법상 계약: 성립과 효력 구별하기",
@@ -149,8 +149,8 @@ export const chapterLessons = [
     "subject": 2,
     "chapter": 1,
     "title": "공공조달 계획",
-    "summary": "수요·시장·가격·경제성·일정을 연결한 실행 가능한 계획",
-    "minutes": 30,
+    "summary": "수요예측·시장조사·TCO·가격·위험·조달 일정과 핵심 25문항",
+    "minutes": 45,
     "sections": [
       [
         "필요를 구체화하기",
@@ -173,8 +173,8 @@ export const chapterLessons = [
     "subject": 2,
     "chapter": 2,
     "title": "조달요구 응대 및 제안",
-    "summary": "조달요구를 분석하고 규격서·과업내용서·제안요청서로 구체화하기",
-    "minutes": 22,
+    "summary": "RFI·RFQ·RFP, 사전규격·입찰공고·참가자격·공동수급과 핵심 25문항",
+    "minutes": 45,
     "sections": [
       [
         "요구 접수와 확인 질문",
@@ -197,8 +197,8 @@ export const chapterLessons = [
     "subject": 2,
     "chapter": 3,
     "title": "입찰 실행",
-    "summary": "사전규격·참가자격·공고·접수·개찰을 순서대로 실행하기",
-    "minutes": 22,
+    "summary": "입찰설명회·전자입찰·공동수급·예정가격부터 무효·담합·경쟁 성립까지",
+    "minutes": 40,
     "sections": [
       [
         "사전규격과 입찰공고 구별하기",

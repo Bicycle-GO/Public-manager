@@ -4,7 +4,7 @@ import { renderStudyMaterials, renderStudyNotes, renderMaterialTopics } from './
 import { curriculum, partLabel, chapterLabel, resolveLessonId, migrateStudyState } from './curriculum.js';
 import { renderCurriculumOutline, renderChapterNavigation, renderPartDirectory, chapterUrl } from './curriculum-ui.js';
 
-import { findChapter, practiceQuestions, questionsByStatus, practiceStatuses, renderPracticeDirectory, renderPracticeStatus, renderPracticeNavigation, renderChapterFilter, renderPracticeGroups, renderQuestionExplanation, renderQuestionContext, questionLabel, answerLabel, attachmentQuestions, electronicQuestions, strategicQuestions } from './practice-ui.js';
+import { findChapter, practiceQuestions, questionsByStatus, practiceStatuses, renderPracticeDirectory, renderPracticeStatus, renderPracticeNavigation, renderChapterFilter, renderPracticeGroups, renderQuestionExplanation, renderQuestionContext, questionLabel, answerLabel, attachmentQuestions, electronicQuestions, strategicQuestions, bidQuestions, followupQuestions } from './practice-ui.js';
 
 const paths = {
  book: '<path d="M12 5c-3-2-6-2-9-1v15c3-1 6-1 9 1 3-2 6-2 9-1V4c-3-1-6-1-9 1Z"/><path d="M12 5v15"/>',
@@ -238,6 +238,8 @@ document.addEventListener('click',event=>{
  if(action==='start-chapter02-ox') startQuiz(attachmentQuestions('ox'));
  if(action==='start-chapter03') startQuiz(electronicQuestions());
  if(action==='start-chapter04') startQuiz(strategicQuestions());
+ if(action==='start-bid-execution') startQuiz(bidQuestions());
+ if(action==='start-followup') startQuiz(followupQuestions(id));
  if(action==='start-principles') startQuiz(questions.filter(q=>q.lesson==='1-02' && q.sourceNumber>=22 && q.sourceNumber<=25));
  if(action==='start-filtered'){const list=questionsByStatus(practiceQuestions(filter,practiceChapter?.id),state,practiceStatus);startQuiz([...list.filter(q=>q.core),...list.filter(q=>!q.core)]);}
  if(action==='quick-quiz') startQuiz(shuffled(questions).slice(0,5));

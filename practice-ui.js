@@ -5,7 +5,26 @@ import { principlesConversation } from './principles-questions.js';
 
 const esc = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
+const followupSets = [
+  {collection:'law1-followup',lesson:'1-05',subject:1,label:'핵심 법령1',summary:'전자문서·계약 성립 → 보증·선금·지체상금 → 분쟁조정의 조건을 확인하세요.'},
+  {collection:'law2-followup',lesson:'1-06',subject:1,label:'핵심 법령2·공정조달',summary:'조달사업·기관별 규정 → 공정조달·제재 → 권리구제를 구분하세요.'},
+  {collection:'planning-followup',lesson:'2-01',subject:2,label:'조달 계획',summary:'수요예측·시장조사 → 비용·가격 → 위험과 일정을 연결하세요.'},
+  {collection:'proposal-followup',lesson:'2-02',subject:2,label:'조달요구 응대·제안',summary:'RFI·RFQ·RFP → 사전규격·공고 → 참가자격·공동수급을 정리하세요. 23번 정답은 ① ㄱ·ㄴ으로 바로잡았습니다.'}
+];
+
+export function followupQuestions(collection) {
+  return followupSets.some(set=>set.collection===collection) ? questions.filter(q=>q.collection===collection) : [];
+}
+
+function followupIntro(lessonId) {
+  const set=followupSets.find(s=>s.lesson===lessonId);
+  if(!set)return '';
+  return `<div class="card overview-question-intro"><span class="subject-label">후속 대화 업데이트 · 2026. 9. 25.</span><h3>${esc(set.label)} 핵심문제 01~25번</h3><p>${esc(set.summary)}</p><p>각 문항에 단계별 풀이·보기별 해설·공공기관 가상 사례·암기 포인트를 제공합니다.</p><p class="small-text">대화 내용을 공식 근거와 대조한 학습용 문항입니다. 정답표 오류와 모호한 조건을 보완한 이유는 채점 후 해설에서 확인할 수 있습니다. 아래 전체 문제 수에는 기존 확인문제도 포함됩니다.</p><div class="overview-intro-actions"><button class="button" data-action="start-followup" data-id="${set.collection}">${esc(set.label)} 25문항 풀기 →</button><a href="#theory/${set.subject}/${set.lesson}">보충 이론과 사례 읽기 →</a></div></div>`;
+}
+
 export function questionLabel(q) {
+  const set=followupSets.find(s=>s.collection===q.collection);
+  if(set)return `${set.label} 대화 ${String(q.sourceNumber).padStart(2,'0')}번`;
   if (q.providedNumber) return `제공자료 예상문제 ${String(q.providedNumber).padStart(2,'0')}번`;
   if (q.attachmentNumber) return `첨부 ${q.type==='ox'?'OX':'예상문제'} ${String(q.attachmentNumber).padStart(2,'0')}번`;
   return q.sourceNumber ? `대화 ${q.sourceNumber}번` : `${q.id}번`;
@@ -26,6 +45,15 @@ export function electronicQuestions() {
 
 export function strategicQuestions() {
   return questions.filter(q=>q.collection==='chapter04-provided');
+}
+
+export function bidQuestions() {
+  return questions.filter(q=>q.collection==='bid-execution');
+}
+
+function bidIntro(lessonId) {
+  if (lessonId !== '2-03') return '';
+  return `<div class="card overview-question-intro"><span class="subject-label">참조 대화 업데이트 · PART 02 CHAPTER 03</span><h3>입찰 핵심문제 01~10번</h3><p>설명회·용어·전자제출·취소 → 공동수급·예정가격·낙찰하한율 → 무효·담합·경쟁 성립을 연결하세요. 각 문항에 단계별 풀이, 보기별 해설, 공공기관 가상 사례와 암기 포인트를 제공합니다.</p><p class="small-text">법령 조문·제출기한·적용 범위를 보완한 학습용 문항입니다. 원문과 달라진 점은 해설에 표시합니다. 아래 문제 수와 풀이 진도에는 기존 확인문제도 포함됩니다.</p><div class="overview-intro-actions"><button class="button" data-action="start-bid-execution">대화 10문항 풀기 →</button><a href="#theory/2/2-03">입찰 흐름과 계산 사례 읽기 →</a></div></div>`;
 }
 
 function strategicIntro(lessonId) {
@@ -92,11 +120,13 @@ export function renderPracticeGroups(subjectId, activeChapter, renderRow, visibl
     const provided = list.filter(q => ['chapter03-provided','chapter04-provided'].includes(q.collection));
     const core = list.filter(q => q.core && !['chapter02-attachment','chapter03-provided','chapter04-provided'].includes(q.collection));
     const extra = list.filter(q => !q.core);
-    return `<section class="section practice-chapter"><div class="section-title"><h2><span class="chapter-code">${chapterLabel(l.chapter)}</span> ${esc(l.title)}</h2><a href="#practice/${subjectId}/${l.id}">${list.length}문항 · 단원별 보기 →</a></div>${visibleQuestions && visibleQuestions.length !== practiceQuestions(subjectId,l.id).length ? '' : l.id === '1-01' ? `<div class="card overview-question-intro"><span class="subject-label">공유 대화 핵심문제 업데이트</span><h3>05~21번 · 개요를 이해하는 17문항</h3><p>체계·목표·7R·대상물·이해관계자·역사·법령·절차·2024년 통계를 정리했습니다. 정답 확인 후 풀이 과정, 보기별 이유, 공공기관을 가정한 사례와 암기 포인트를 읽어 보세요.</p><p class="small-text">대화에서 확인한 05~21번을 반영했습니다. 모호한 질문과 사실관계는 보정하고 해설에 이유를 표시했습니다. 기존 핵심문제와 추가 확인문제도 함께 제공하며, 공식 기출문제로 표시하지 않습니다.</p><div class="overview-intro-actions"><button class="button" data-action="start-overview">공유 대화 17문항 풀기 →</button><a href="${overviewConversation}" target="_blank" rel="noopener noreferrer">바탕이 된 대화 보기 ↗</a></div></div>` : principlesIntro(l.id)+electronicIntro(l.id)+strategicIntro(l.id)}${provided.length ? `<h3 class="practice-group-title">제공자료 예상문제 · ${provided.length}문항</h3><div class="question-list">${provided.map(renderRow).join('')}</div>` : ''}${expected.length ? `<h3 class="practice-group-title">첨부 예상문제 · ${expected.length}문항</h3><div class="question-list">${expected.map(renderRow).join('')}</div>` : ''}${ox.length ? `<h3 class="practice-group-title">첨부 OX · ${ox.length}문항</h3><div class="question-list">${ox.map(renderRow).join('')}</div>` : ''}${core.length ? `<h3 class="practice-group-title">단원별 핵심문제</h3><div class="question-list">${core.map(renderRow).join('')}</div>` : ''}${extra.length ? `${core.length || expected.length || ox.length || provided.length ? '<h3 class="practice-group-title">추가 확인문제</h3>' : ''}<div class="question-list">${extra.map(renderRow).join('')}</div>` : ''}</section>`;
+    return `<section class="section practice-chapter"><div class="section-title"><h2><span class="chapter-code">${chapterLabel(l.chapter)}</span> ${esc(l.title)}</h2><a href="#practice/${subjectId}/${l.id}">${list.length}문항 · 단원별 보기 →</a></div>${visibleQuestions && visibleQuestions.length !== practiceQuestions(subjectId,l.id).length ? '' : l.id === '1-01' ? `<div class="card overview-question-intro"><span class="subject-label">공유 대화 핵심문제 업데이트</span><h3>05~21번 · 개요를 이해하는 17문항</h3><p>체계·목표·7R·대상물·이해관계자·역사·법령·절차·2024년 통계를 정리했습니다. 정답 확인 후 풀이 과정, 보기별 이유, 공공기관을 가정한 사례와 암기 포인트를 읽어 보세요.</p><p class="small-text">대화에서 확인한 05~21번을 반영했습니다. 모호한 질문과 사실관계는 보정하고 해설에 이유를 표시했습니다. 기존 핵심문제와 추가 확인문제도 함께 제공하며, 공식 기출문제로 표시하지 않습니다.</p><div class="overview-intro-actions"><button class="button" data-action="start-overview">공유 대화 17문항 풀기 →</button><a href="${overviewConversation}" target="_blank" rel="noopener noreferrer">바탕이 된 대화 보기 ↗</a></div></div>` : principlesIntro(l.id)+electronicIntro(l.id)+strategicIntro(l.id)+bidIntro(l.id)+followupIntro(l.id)}${provided.length ? `<h3 class="practice-group-title">제공자료 예상문제 · ${provided.length}문항</h3><div class="question-list">${provided.map(renderRow).join('')}</div>` : ''}${expected.length ? `<h3 class="practice-group-title">첨부 예상문제 · ${expected.length}문항</h3><div class="question-list">${expected.map(renderRow).join('')}</div>` : ''}${ox.length ? `<h3 class="practice-group-title">첨부 OX · ${ox.length}문항</h3><div class="question-list">${ox.map(renderRow).join('')}</div>` : ''}${core.length ? `<h3 class="practice-group-title">단원별 핵심문제</h3><div class="question-list">${core.map(renderRow).join('')}</div>` : ''}${extra.length ? `${core.length || expected.length || ox.length || provided.length ? '<h3 class="practice-group-title">추가 확인문제</h3>' : ''}<div class="question-list">${extra.map(renderRow).join('')}</div>` : ''}</section>`;
   }).join('');
 }
 
 export function renderQuestionContext(q) {
+  if(q.collection==='bid-execution') return `<p class="question-origin">입찰 핵심정리 대화 ${String(q.sourceNumber).padStart(2,'0')}번${q.adapted?' · 학습용 보정':''}</p>`;
+  if(followupSets.some(set=>set.collection===q.collection)) return `<p class="question-origin">${esc(questionLabel(q))}${q.adapted?' · 학습용 보정':''}</p>${q.passage?.length?`<section class="question-passage" aria-label="문제 보기"><h3>보기</h3>${q.passage.map(line=>`<p>${esc(line)}</p>`).join('')}</section>`:''}`;
   return `${q.attachmentNumber || q.providedNumber ? `<p class="question-origin">${esc(questionLabel(q))}${q.reconstructed?' · 선택지 재구성':''}${q.adapted?' · 학습용 보정':''}</p>` : q.sourceNumber ? `<p class="question-origin">공유 대화 ${String(q.sourceNumber).padStart(2,'0')}번 · ${esc(q.topic)}${q.adapted ? ' · 학습용 보정' : ''}</p>` : ''}${q.passage?.length ? `<section class="question-passage" aria-label="문제 보기"><h3>보기</h3>${q.passage.map(line => `<p>${esc(line)}</p>`).join('')}</section>` : ''}`;
 }
 
