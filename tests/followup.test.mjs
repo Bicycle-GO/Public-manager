@@ -7,7 +7,7 @@ import {renderLessonGuide} from '../lesson-content.js';
 import {renderMaterialTopics} from '../study-ui.js';
 
 const sets=[['law1-followup','1-05',162],['law2-followup','1-06',187],['planning-followup','2-01',212],['proposal-followup','2-02',237]];
-const added=questions.filter(q=>q.id>161);
+const added=questions.filter(q=>q.id>161 && q.id<=261);
 
 test('One hundred follow-up questions preserve all previous question records and progress IDs',()=>{
   assert.equal(createHash('sha256').update(JSON.stringify(questions.filter(q=>q.id<=161))).digest('hex'),'b6fecb56d20468c97ecc7e05c64cb79c0bf79dfa3f37ce72f0786eeb3855f1ed');

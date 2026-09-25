@@ -9,7 +9,11 @@ const followupSets = [
   {collection:'law1-followup',lesson:'1-05',subject:1,label:'핵심 법령1',summary:'전자문서·계약 성립 → 보증·선금·지체상금 → 분쟁조정의 조건을 확인하세요.'},
   {collection:'law2-followup',lesson:'1-06',subject:1,label:'핵심 법령2·공정조달',summary:'조달사업·기관별 규정 → 공정조달·제재 → 권리구제를 구분하세요.'},
   {collection:'planning-followup',lesson:'2-01',subject:2,label:'조달 계획',summary:'수요예측·시장조사 → 비용·가격 → 위험과 일정을 연결하세요.'},
-  {collection:'proposal-followup',lesson:'2-02',subject:2,label:'조달요구 응대·제안',summary:'RFI·RFQ·RFP → 사전규격·공고 → 참가자격·공동수급을 정리하세요. 23번 정답은 ① ㄱ·ㄴ으로 바로잡았습니다.'}
+  {collection:'proposal-followup',lesson:'2-02',subject:2,label:'조달요구 응대·제안',summary:'RFI·RFQ·RFP → 사전규격·공고 → 참가자격·공동수급을 정리하세요. 23번 정답은 ① ㄱ·ㄴ으로 바로잡았습니다.'},
+  {collection:'award-contract',lesson:'2-05',subject:2,label:'낙찰·계약',date:'2026. 9. 26.',range:'01~05·07~25번',summary:'협상순위·배점·동점 처리 → 계약·선금·보증 → 지체·정산·권리구제를 연결하세요.',note:'원대화의 06번은 정답표만 있고 문제 본문이 없어 제외했습니다. 나머지 24문항은 원문 번호를 유지합니다.'},
+  {collection:'contract-management',lesson:'3-01',subject:3,label:'계약관리 일반',date:'2026. 9. 26.',summary:'CMP·착수·인력 → 위험·EVM·성과 → 하도급·지체·하자관리를 연결하세요.',note:'23번은 제공된 보기와 해설을 바탕으로 누락된 질문을 복원했습니다. CPI 등 계산 해석과 법령상 조건을 보완한 이유는 해설에 표시합니다.'},
+  {collection:'contract-change',lesson:'3-02',subject:3,label:'계약변경·종결',date:'2026. 9. 26.',range:'01~25번',summary:'금액 조정·신규비목 → 검사·지급·보증 → 종료·분쟁 해결을 정리하세요.',note:'후속 19~25번을 추가했습니다. 지체상금 상한과 검사기간, 보증금 면제·귀속, 건축물 하자기간의 조건을 보완했습니다. 원문의 복수정답과 모호한 보기를 고친 이유를 해설에서 확인하세요.'},
+  {collection:'goods-contract',lesson:'3-03',subject:3,label:'물품 계약관리',date:'2026. 9. 26.',range:'01~11번',summary:'구매·제조·단가 → 등록·규격·낙찰 → EXW·CIF → 변경·선금·검사를 연결하세요.',note:'대화 후속 06~11번까지 반영했습니다. 제조·공급 등록서류와 협상배점의 적용 범위를 구분하고, 인코텀즈의 비용·위험 이전 및 신규비목 단가의 조건을 보완했습니다.'}
 ];
 
 export function followupQuestions(collection) {
@@ -19,12 +23,13 @@ export function followupQuestions(collection) {
 function followupIntro(lessonId) {
   const set=followupSets.find(s=>s.lesson===lessonId);
   if(!set)return '';
-  return `<div class="card overview-question-intro"><span class="subject-label">후속 대화 업데이트 · 2026. 9. 25.</span><h3>${esc(set.label)} 핵심문제 01~25번</h3><p>${esc(set.summary)}</p><p>각 문항에 단계별 풀이·보기별 해설·공공기관 가상 사례·암기 포인트를 제공합니다.</p><p class="small-text">대화 내용을 공식 근거와 대조한 학습용 문항입니다. 정답표 오류와 모호한 조건을 보완한 이유는 채점 후 해설에서 확인할 수 있습니다. 아래 전체 문제 수에는 기존 확인문제도 포함됩니다.</p><div class="overview-intro-actions"><button class="button" data-action="start-followup" data-id="${set.collection}">${esc(set.label)} 25문항 풀기 →</button><a href="#theory/${set.subject}/${set.lesson}">보충 이론과 사례 읽기 →</a></div></div>`;
+  return `<div class="card overview-question-intro"><span class="subject-label">후속 대화 업데이트 · ${set.date||'2026. 9. 25.'}</span><h3>${esc(set.label)} 핵심문제 ${set.range||'01~25번'}</h3><p>${esc(set.summary)}</p><p>각 문항에 단계별 풀이·보기별 해설·공공기관 가상 사례·암기 포인트를 제공합니다.</p>${set.note?`<p class="small-text">${esc(set.note)}</p>`:''}<p class="small-text">대화 내용을 공식 근거와 대조한 학습용 문항입니다. 정답표 오류와 모호한 조건을 보완한 이유는 채점 후 해설에서 확인할 수 있습니다. 아래 전체 문제 수에는 기존 확인문제도 포함됩니다.</p><div class="overview-intro-actions"><button class="button" data-action="start-followup" data-id="${set.collection}">${esc(set.label)} ${followupQuestions(set.collection).length}문항 풀기 →</button><a href="#theory/${set.subject}/${set.lesson}">보충 이론과 사례 읽기 →</a></div></div>`;
 }
 
 export function questionLabel(q) {
   const set=followupSets.find(s=>s.collection===q.collection);
   if(set)return `${set.label} 대화 ${String(q.sourceNumber).padStart(2,'0')}번`;
+  if(q.collection==='bid-execution')return `입찰 실행 대화 ${String(q.sourceNumber).padStart(2,'0')}번`;
   if (q.providedNumber) return `제공자료 예상문제 ${String(q.providedNumber).padStart(2,'0')}번`;
   if (q.attachmentNumber) return `첨부 ${q.type==='ox'?'OX':'예상문제'} ${String(q.attachmentNumber).padStart(2,'0')}번`;
   return q.sourceNumber ? `대화 ${q.sourceNumber}번` : `${q.id}번`;
@@ -53,7 +58,7 @@ export function bidQuestions() {
 
 function bidIntro(lessonId) {
   if (lessonId !== '2-03') return '';
-  return `<div class="card overview-question-intro"><span class="subject-label">참조 대화 업데이트 · PART 02 CHAPTER 03</span><h3>입찰 핵심문제 01~10번</h3><p>설명회·용어·전자제출·취소 → 공동수급·예정가격·낙찰하한율 → 무효·담합·경쟁 성립을 연결하세요. 각 문항에 단계별 풀이, 보기별 해설, 공공기관 가상 사례와 암기 포인트를 제공합니다.</p><p class="small-text">법령 조문·제출기한·적용 범위를 보완한 학습용 문항입니다. 원문과 달라진 점은 해설에 표시합니다. 아래 문제 수와 풀이 진도에는 기존 확인문제도 포함됩니다.</p><div class="overview-intro-actions"><button class="button" data-action="start-bid-execution">대화 10문항 풀기 →</button><a href="#theory/2/2-03">입찰 흐름과 계산 사례 읽기 →</a></div></div>`;
+  return `<div class="card overview-question-intro"><span class="subject-label">참조 대화 업데이트 · 2026. 9. 26.</span><h3>입찰 실행 핵심문제 01~25번</h3><p>기존 01~10번에 후속 11~25번을 추가했습니다. 설명회·전자입찰 → 공동수급·예정가격 → 보증 확약·등록 변경·대리권과 무효를 연결하세요. 각 문항에 단계별 풀이, 보기별 해설, 공공기관 가상 사례와 암기 포인트를 제공합니다.</p><p class="small-text">법령 조문·제출기한·적용 범위를 보완한 학습용 문항입니다. 원문과 달라진 점은 해설에 표시합니다. 아래 문제 수와 풀이 진도에는 기존 확인문제도 포함됩니다.</p><div class="overview-intro-actions"><button class="button" data-action="start-bid-execution">입찰 실행 25문항 풀기 →</button><a href="#theory/2/2-03">입찰 흐름과 계산 사례 읽기 →</a><a href="#practice/2/2-05">낙찰·계약 후속 24문항 →</a></div></div>`;
 }
 
 function strategicIntro(lessonId) {
@@ -125,8 +130,8 @@ export function renderPracticeGroups(subjectId, activeChapter, renderRow, visibl
 }
 
 export function renderQuestionContext(q) {
-  if(q.collection==='bid-execution') return `<p class="question-origin">입찰 핵심정리 대화 ${String(q.sourceNumber).padStart(2,'0')}번${q.adapted?' · 학습용 보정':''}</p>`;
-  if(followupSets.some(set=>set.collection===q.collection)) return `<p class="question-origin">${esc(questionLabel(q))}${q.adapted?' · 학습용 보정':''}</p>${q.passage?.length?`<section class="question-passage" aria-label="문제 보기"><h3>보기</h3>${q.passage.map(line=>`<p>${esc(line)}</p>`).join('')}</section>`:''}`;
+  if(q.collection==='bid-execution') return `<p class="question-origin">${esc(questionLabel(q))}${q.adapted?' · 학습용 보정':''}</p>${q.passage?.length?`<section class="question-passage" aria-label="문제 보기"><h3>보기</h3>${q.passage.map(line=>`<p>${esc(line)}</p>`).join('')}</section>`:''}`;
+  if(followupSets.some(set=>set.collection===q.collection)) return `<p class="question-origin">${esc(questionLabel(q))}${q.reconstructedStem?' · 질문 복원':''}${q.adapted?' · 학습용 보정':''}</p>${q.passage?.length?`<section class="question-passage" aria-label="문제 보기"><h3>보기</h3>${q.passage.map(line=>`<p>${esc(line)}</p>`).join('')}</section>`:''}`;
   return `${q.attachmentNumber || q.providedNumber ? `<p class="question-origin">${esc(questionLabel(q))}${q.reconstructed?' · 선택지 재구성':''}${q.adapted?' · 학습용 보정':''}</p>` : q.sourceNumber ? `<p class="question-origin">공유 대화 ${String(q.sourceNumber).padStart(2,'0')}번 · ${esc(q.topic)}${q.adapted ? ' · 학습용 보정' : ''}</p>` : ''}${q.passage?.length ? `<section class="question-passage" aria-label="문제 보기"><h3>보기</h3>${q.passage.map(line => `<p>${esc(line)}</p>`).join('')}</section>` : ''}`;
 }
 

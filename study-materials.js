@@ -2,13 +2,16 @@ import { procurementMethodTopics } from './procurement-methods.js';
 import { electronicTopics } from './electronic-procurement.js';
 import { strategicTopics } from './strategic-procurement.js';
 import { bidTopics } from './bid-execution.js';
+import { bidExecutionFollowupTopics, awardContractTopics } from './bid-followup-study.js';
+import { contractManagementTopics, contractChangeTopics } from './contract-management-study.js';
+import { goodsContractTopics } from './goods-contract-study.js';
 import { law1FollowupTopics } from './law1-followup.js';
 import { law2FollowupTopics } from './law2-followup.js';
 import { planningFollowupTopics } from './planning-followup.js';
 import { proposalFollowupTopics } from './proposal-followup.js';
 
 export const materialEdition = {
-  "updated": "2026. 9. 25.",
+  "updated": "2026. 9. 26.",
   "title": "제1편 공공조달관리사 필기",
   "provenance": "사용자가 지정한 3개 PART·18개 CHAPTER 목차에 따라 기존 웹 학습자료를 재배치하고 내용을 보강했습니다. 이전 대화의 목차·요약을 참고한 자체 작성 자료이며 PDF·Word 원문이나 공식 기출문제를 그대로 옮긴 자료는 아닙니다."
 };
@@ -456,7 +459,7 @@ export const studyNotes = {
     ]
   },
   "2-03": {
-    "searchTopics": bidTopics,
+    "searchTopics": [...bidTopics, ...bidExecutionFollowupTopics],
     "topics": [
       [
         "입찰의 유효성 확인",
@@ -517,6 +520,7 @@ export const studyNotes = {
     ]
   },
   "2-05": {
+    "searchTopics": awardContractTopics,
     "topics": [
       [
         "체결 전 교차 점검",
@@ -535,6 +539,7 @@ export const studyNotes = {
     ]
   },
   "3-01": {
+    "searchTopics": contractManagementTopics,
     "topics": [
       [
         "보증의 목적과 유효기간 확인",
@@ -597,6 +602,7 @@ export const studyNotes = {
     ]
   },
   "3-02": {
+    "searchTopics": contractChangeTopics,
     "topics": [
       [
         "설계변경·물가변동·기타 변경 구별하기",
@@ -672,6 +678,7 @@ export const studyNotes = {
     ]
   },
   "3-03": {
+    "searchTopics": goodsContractTopics,
     "topics": [
       [
         "부분 납품과 대체품",

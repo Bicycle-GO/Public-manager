@@ -63,10 +63,10 @@ test('Lessons have content, a valid official source, and practice questions', ()
 });
 
 test('All thirty existing question identities survive theory remapping and six questions cover new chapters', () => {
-  assert.equal(questions.length, 261);
+  assert.equal(questions.length, 361);
   const legacy = JSON.parse(readFileSync(new URL('./legacy-questions.json', import.meta.url), 'utf8'));
   assert.deepEqual(questions.slice(0,30).map(({lesson,...q})=>q), legacy);
-  assert.deepEqual(subjects.map(s=>questions.filter(q=>q.subject===s.id).length),[176,71,14]);
+  assert.deepEqual(subjects.map(s=>questions.filter(q=>q.subject===s.id).length),[176,110,75]);
   for (const lesson of lessons) assert.ok(questions.some(q=>q.lesson===lesson.id));
 });
 

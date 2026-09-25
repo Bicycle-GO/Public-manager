@@ -197,8 +197,8 @@ export const chapterLessons = [
     "subject": 2,
     "chapter": 3,
     "title": "입찰 실행",
-    "summary": "입찰설명회·전자입찰·공동수급·예정가격부터 무효·담합·경쟁 성립까지",
-    "minutes": 40,
+    "summary": "대화 25문항으로 설명회·공동수급·전자입찰·예정가격·제출 권한과 입찰무효 확인하기",
+    "minutes": 55,
     "sections": [
       [
         "사전규격과 입찰공고 구별하기",
@@ -245,8 +245,8 @@ export const chapterLessons = [
     "subject": 2,
     "chapter": 5,
     "title": "낙찰자 결정 및 계약",
-    "summary": "낙찰자 결정에서 협상·보증·계약 체결로 이어가기",
-    "minutes": 22,
+    "summary": "대화 24문항으로 협상 배점·동점 처리부터 선금 정산·지체상금·계약 책임까지",
+    "minutes": 55,
     "sections": [
       [
         "낙찰자 결정의 여러 방법",
@@ -269,8 +269,8 @@ export const chapterLessons = [
     "subject": 3,
     "chapter": 1,
     "title": "계약관리 일반 절차",
-    "summary": "계약문서·착수·이행·보증·검사·대가 지급의 공통 절차",
-    "minutes": 26,
+    "summary": "대화25문항으로 CMP·착수·M/M·위험·EVM·하도급과 지체상금 이해하기",
+    "minutes": 55,
     "sections": [
       [
         "계약문서를 함께 읽기",
@@ -293,8 +293,8 @@ export const chapterLessons = [
     "subject": 3,
     "chapter": 2,
     "title": "계약변경 및 종결 관리",
-    "summary": "계약 변경·지연 책임에서 해제·해지·정산·사후관리까지",
-    "minutes": 28,
+    "summary": "대화25문항으로 금액 조정·종료·검사·보증·지체상금·하자책임 연결하기",
+    "minutes": 55,
     "sections": [
       [
         "변경은 근거가 필요",
@@ -317,8 +317,8 @@ export const chapterLessons = [
     "subject": 3,
     "chapter": 3,
     "title": "물품 계약관리",
-    "summary": "물품의 규격·수량·납기·검사·인수·하자 관리",
-    "minutes": 22,
+    "summary": "대화11문항으로 물품계약·등록·낙찰·EXW/CIF·규격변경·선금·검사 이해하기",
+    "minutes": 35,
     "sections": [
       [
         "구매와 제조 계약의 확인",

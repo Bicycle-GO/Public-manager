@@ -16,7 +16,8 @@ test('Bid conversation is appended without changing any of the prior 151 questio
 });
 
 test('The dedicated bid set and status filters never mix old chapter questions',()=>{
-  assert.deepEqual(bidQuestions(),added);
+  assert.deepEqual(bidQuestions().filter(q=>q.sourceNumber<=10),added);
+  assert.equal(bidQuestions().length,25);
   const chapter=lessons.find(l=>l.id==='2-03');
   const html=renderPracticeGroups(2,chapter,q=>`<p data-id="${q.id}"></p>`);
   assert.ok(html.includes('start-bid-execution'));
@@ -51,7 +52,7 @@ test('Bid theory calculates the example correctly and is discoverable by the add
   const html=renderLessonGuide(lessons.find(l=>l.id==='2-03'));
   assert.ok(html.includes('99,875,000') && html.includes('#practice/2/2-03'));
   assert.ok(html.includes('제39조 제3항') && html.includes('마감일 전일까지'));
-  assert.equal((html.match(/<details>/g)||[]).length,7);
+  assert.equal((html.match(/<details>/g)||[]).length,10);
   for(const term of ['공동수급','투찰','낙찰하한율','공식 연기','담합']) assert.ok(renderMaterialTopics(term).includes('#theory/2/2-03'),term);
   assert.ok(!renderLessonGuide(lessons.find(l=>l.id==='1-03')).includes('bid-execution'));
 });

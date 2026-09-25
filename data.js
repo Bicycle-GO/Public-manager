@@ -10,6 +10,11 @@ import { law1FollowupQuestions } from './law1-followup.js';
 import { law2FollowupQuestions } from './law2-followup.js';
 import { planningFollowupQuestions } from './planning-followup.js';
 import { proposalFollowupQuestions } from './proposal-followup.js';
+import { bidExecutionFollowupQuestions } from './bid-execution-followup-questions.js';
+import { awardContractQuestions } from './award-contract-questions.js';
+import { contractManagementQuestions } from './contract-management-questions.js';
+import { contractChangeQuestions } from './contract-change-questions.js';
+import { goodsContractQuestions } from './goods-contract-questions.js';
 
 export const sources = {
   "subjects": "https://www.law.go.kr/flDownload.do?bylClsCd=110201&flSeq=155928887&gubun=",
@@ -670,5 +675,10 @@ export const questions = [
   ...law1FollowupQuestions,
   ...law2FollowupQuestions,
   ...planningFollowupQuestions,
-  ...proposalFollowupQuestions
+  ...proposalFollowupQuestions,
+  ...bidExecutionFollowupQuestions,
+  ...awardContractQuestions,
+  ...contractManagementQuestions,
+  ...contractChangeQuestions,
+  ...goodsContractQuestions
 ];
