@@ -1,0 +1,16 @@
+{
+  "chapter": "2-04",
+  "available": 11,
+  "shared": 10,
+  "global": 402,
+  "part2": 110,
+  "graded": 11,
+  "sharedRetryAndBookmarkSync": true,
+  "sourceChapterStill25": true,
+  "resultReturnsToStartingChapter": true,
+  "theoryFromQuizAndSearch": true,
+  "persistAfterReload": true,
+  "mobileNoOverflow": true,
+  "consoleErrors": [],
+  "failedRequests": []
+}

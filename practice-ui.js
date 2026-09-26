@@ -1,6 +1,7 @@
 import { lessons, questions } from './data.js';
 import { chapterLabel, partLabel, resolveLessonId } from './curriculum.js';
 import {renderCoverageBadge} from './chapter-review.js';
+import {questionInChapter, renderEvaluationPracticeIntro} from './evaluation-study.js';
 import { overviewConversation } from './overview-questions.js';
 import { principlesConversation } from './principles-questions.js';
 
@@ -84,7 +85,7 @@ export function findChapter(subjectId, lessonId) {
 }
 
 export function practiceQuestions(subjectId, lessonId = null) {
-  return questions.filter(q => (!subjectId || q.subject === subjectId) && (!lessonId || q.lesson === lessonId));
+  return questions.filter(q => (!subjectId || q.subject === subjectId) && (!lessonId || questionInChapter(q, lessonId)));
 }
 
 export const practiceStatuses = [['all','전체'],['unanswered','미풀이'],['correct','정답'],['wrong','오답'],['saved','북마크']];
@@ -102,7 +103,7 @@ export function renderPracticeDirectory(subjectId, state) {
     const list=practiceQuestions(subjectId,l.id), remaining=questionsByStatus(list,state,'unanswered').length;
     const wrong=questionsByStatus(list,state,'wrong').length, saved=questionsByStatus(list,state,'saved').length;
     const done=list.length-remaining, progress=list.length?Math.round(done/list.length*100):0;
-    return `<a class="card practice-chapter-card" href="#practice/${subjectId}/${l.id}"><span class="chapter-code">${chapterLabel(l.chapter)}</span><h2>${esc(l.title)}</h2>${renderCoverageBadge(l.id)}<p class="practice-card-total">총 ${list.length}문항 · 핵심 ${list.filter(q=>q.core).length}문항</p><div class="practice-card-progress"><span>풀이 완료 ${done} / ${list.length}</span><strong>${progress}%</strong></div><div class="progress-track"><span style="width:${progress}%"></span></div><div class="practice-card-counts"><span>미풀이 <b>${remaining}</b></span><span>오답 <b>${wrong}</b></span><span>북마크 <b>${saved}</b></span></div><span class="practice-card-open">문제 관리 페이지 →</span></a>`;
+    return `<a class="card practice-chapter-card" href="#practice/${subjectId}/${l.id}"><span class="chapter-code">${chapterLabel(l.chapter)}</span><h2>${esc(l.title)}</h2>${renderCoverageBadge(l.id)}${l.id==='2-04'?'<p class="small-text">기존 1문항 + CHAPTER 05 공유 10문항 · 학습기록 공유</p>':''}<p class="practice-card-total">총 ${list.length}문항 · 핵심 ${list.filter(q=>q.core).length}문항</p><div class="practice-card-progress"><span>풀이 완료 ${done} / ${list.length}</span><strong>${progress}%</strong></div><div class="progress-track"><span style="width:${progress}%"></span></div><div class="practice-card-counts"><span>미풀이 <b>${remaining}</b></span><span>오답 <b>${wrong}</b></span><span>북마크 <b>${saved}</b></span></div><span class="practice-card-open">문제 관리 페이지 →</span></a>`;
   }).join('')}</section>`;
 }
 
@@ -122,13 +123,14 @@ export function renderChapterFilter(subjectId, activeChapter) {
 
 export function renderPracticeGroups(subjectId, activeChapter, renderRow, visibleQuestions = null) {
   return lessons.filter(l => l.subject === subjectId && (!activeChapter || l.id === activeChapter.id)).map(l => {
-    const list = (visibleQuestions || practiceQuestions(subjectId, l.id)).filter(q=>q.lesson===l.id);
+    const list = (visibleQuestions || practiceQuestions(subjectId, l.id)).filter(q=>questionInChapter(q,l.id));
+    const shared = list.filter(q=>q.lesson!==l.id);
     const expected = list.filter(q => q.collection==='chapter02-attachment' && q.type==='multiple');
     const ox = list.filter(q => q.collection==='chapter02-attachment' && q.type==='ox');
     const provided = list.filter(q => ['chapter03-provided','chapter04-provided'].includes(q.collection));
-    const core = list.filter(q => q.core && !['chapter02-attachment','chapter03-provided','chapter04-provided'].includes(q.collection));
-    const extra = list.filter(q => !q.core);
-    return `<section class="section practice-chapter"><div class="section-title"><h2><span class="chapter-code">${chapterLabel(l.chapter)}</span> ${esc(l.title)}</h2><a href="#practice/${subjectId}/${l.id}">${list.length}문항 · 단원별 보기 →</a></div>${visibleQuestions && visibleQuestions.length !== practiceQuestions(subjectId,l.id).length ? '' : l.id === '1-01' ? `<div class="card overview-question-intro"><span class="subject-label">공유 대화 핵심문제 업데이트</span><h3>05~21번 · 개요를 이해하는 17문항</h3><p>체계·목표·7R·대상물·이해관계자·역사·법령·절차·2024년 통계를 정리했습니다. 정답 확인 후 풀이 과정, 보기별 이유, 공공기관을 가정한 사례와 암기 포인트를 읽어 보세요.</p><p class="small-text">대화에서 확인한 05~21번을 반영했습니다. 모호한 질문과 사실관계는 보정하고 해설에 이유를 표시했습니다. 기존 핵심문제와 추가 확인문제도 함께 제공하며, 공식 기출문제로 표시하지 않습니다.</p><div class="overview-intro-actions"><button class="button" data-action="start-overview">공유 대화 17문항 풀기 →</button><a href="${overviewConversation}" target="_blank" rel="noopener noreferrer">바탕이 된 대화 보기 ↗</a></div></div>` : principlesIntro(l.id)+electronicIntro(l.id)+strategicIntro(l.id)+bidIntro(l.id)+followupIntro(l.id)}${provided.length ? `<h3 class="practice-group-title">제공자료 예상문제 · ${provided.length}문항</h3><div class="question-list">${provided.map(renderRow).join('')}</div>` : ''}${expected.length ? `<h3 class="practice-group-title">첨부 예상문제 · ${expected.length}문항</h3><div class="question-list">${expected.map(renderRow).join('')}</div>` : ''}${ox.length ? `<h3 class="practice-group-title">첨부 OX · ${ox.length}문항</h3><div class="question-list">${ox.map(renderRow).join('')}</div>` : ''}${core.length ? `<h3 class="practice-group-title">단원별 핵심문제</h3><div class="question-list">${core.map(renderRow).join('')}</div>` : ''}${extra.length ? `${core.length || expected.length || ox.length || provided.length ? '<h3 class="practice-group-title">추가 확인문제</h3>' : ''}<div class="question-list">${extra.map(renderRow).join('')}</div>` : ''}</section>`;
+    const core = list.filter(q => q.lesson===l.id && q.core && !['chapter02-attachment','chapter03-provided','chapter04-provided'].includes(q.collection));
+    const extra = list.filter(q => q.lesson===l.id && !q.core);
+    return `<section class="section practice-chapter"><div class="section-title"><h2><span class="chapter-code">${chapterLabel(l.chapter)}</span> ${esc(l.title)}</h2><a href="#practice/${subjectId}/${l.id}">${list.length}문항 · 단원별 보기 →</a></div>${visibleQuestions && visibleQuestions.length !== practiceQuestions(subjectId,l.id).length ? '' : l.id === '1-01' ? `<div class="card overview-question-intro"><span class="subject-label">공유 대화 핵심문제 업데이트</span><h3>05~21번 · 개요를 이해하는 17문항</h3><p>체계·목표·7R·대상물·이해관계자·역사·법령·절차·2024년 통계를 정리했습니다. 정답 확인 후 풀이 과정, 보기별 이유, 공공기관을 가정한 사례와 암기 포인트를 읽어 보세요.</p><p class="small-text">대화에서 확인한 05~21번을 반영했습니다. 모호한 질문과 사실관계는 보정하고 해설에 이유를 표시했습니다. 기존 핵심문제와 추가 확인문제도 함께 제공하며, 공식 기출문제로 표시하지 않습니다.</p><div class="overview-intro-actions"><button class="button" data-action="start-overview">공유 대화 17문항 풀기 →</button><a href="${overviewConversation}" target="_blank" rel="noopener noreferrer">바탕이 된 대화 보기 ↗</a></div></div>` : principlesIntro(l.id)+electronicIntro(l.id)+strategicIntro(l.id)+bidIntro(l.id)+followupIntro(l.id)+(l.id==='2-04'?renderEvaluationPracticeIntro():'')}${shared.length ? `<h3 class="practice-group-title">평가 관련 공유 문항 · 원래 수록 CHAPTER 05 · ${shared.length}문항</h3><div class="question-list">${shared.map(renderRow).join('')}</div>` : ''}${provided.length ? `<h3 class="practice-group-title">제공자료 예상문제 · ${provided.length}문항</h3><div class="question-list">${provided.map(renderRow).join('')}</div>` : ''}${expected.length ? `<h3 class="practice-group-title">첨부 예상문제 · ${expected.length}문항</h3><div class="question-list">${expected.map(renderRow).join('')}</div>` : ''}${ox.length ? `<h3 class="practice-group-title">첨부 OX · ${ox.length}문항</h3><div class="question-list">${ox.map(renderRow).join('')}</div>` : ''}${core.length ? `<h3 class="practice-group-title">단원별 핵심문제</h3><div class="question-list">${core.map(renderRow).join('')}</div>` : ''}${extra.length ? `${shared.length || core.length || expected.length || ox.length || provided.length ? '<h3 class="practice-group-title">추가 확인문제</h3>' : ''}<div class="question-list">${extra.map(renderRow).join('')}</div>` : ''}</section>`;
   }).join('');
 }
 

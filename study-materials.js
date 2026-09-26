@@ -2,6 +2,7 @@ import { procurementMethodTopics } from './procurement-methods.js';
 import { electronicTopics } from './electronic-procurement.js';
 import { strategicTopics } from './strategic-procurement.js';
 import { bidTopics } from './bid-execution.js';
+import { evaluationTopics } from './evaluation-study.js';
 import { bidExecutionFollowupTopics, awardContractTopics } from './bid-followup-study.js';
 import { contractManagementTopics, contractChangeTopics } from './contract-management-study.js';
 import { goodsContractTopics } from './goods-contract-study.js';
@@ -504,6 +505,7 @@ export const studyNotes = {
     ]
   },
   "2-04": {
+    "searchTopics": evaluationTopics,
     "topics": [
       [
         "기술평가와 가격평가",

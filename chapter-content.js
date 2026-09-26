@@ -221,8 +221,8 @@ export const chapterLessons = [
     "subject": 2,
     "chapter": 4,
     "title": "입찰제안평가",
-    "summary": "평가 기준·위원·기술과 가격 평가를 일관되게 관리하기",
-    "minutes": 22,
+    "summary": "기술·가격 배점, 협상적격자 85%, 동점 처리와 결과 분석",
+    "minutes": 30,
     "sections": [
       [
         "평가 기준의 일관성",
