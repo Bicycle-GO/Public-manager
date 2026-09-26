@@ -17,7 +17,7 @@ test('Chapter 04 appends 25 questions and preserves all previous 126 question re
   assert.deepEqual(added.map(q=>q.answer+1),[3,3,3,1,2,2,4,3,3,3,4,1,2,3,2,3,3,4,3,4,3,3,2,1,3]);
   const prior=questions.filter(q=>q.id<=126);
   assert.equal(createHash('sha256').update(JSON.stringify(prior)).digest('hex'),'c180dfb93741df746268448be39600b5b66f15a03f16fdf17e999f6a0462cb2c');
-  assert.equal(new Set(questions.map(q=>q.id)).size,373);
+  assert.equal(new Set(questions.map(q=>q.id)).size,402);
   assert.equal(questions.filter(q=>q.type==='ox').length,20);
   assert.ok(added.every(q=>q.lesson==='1-04' && q.subject===1 && q.type==='multiple' && q.core && q.reconstructed));
 });

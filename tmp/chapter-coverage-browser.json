@@ -1,0 +1,28 @@
+{
+  "chapters": {
+    "3-04": {
+      "registered": 1,
+      "related": 15,
+      "graded": 15,
+      "missingSourceVisible": true,
+      "noMobileOverflow": true
+    },
+    "3-05": {
+      "registered": 1,
+      "related": 5,
+      "graded": 5,
+      "missingSourceVisible": true,
+      "noMobileOverflow": true
+    },
+    "3-06": {
+      "registered": 5,
+      "related": 12,
+      "graded": 12,
+      "missingSourceVisible": true,
+      "noMobileOverflow": true
+    }
+  },
+  "answersPreservedAfterReload": true,
+  "consoleErrors": [],
+  "failedRequests": []
+}

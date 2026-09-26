@@ -6,7 +6,7 @@ import {followupQuestions,renderPracticeGroups,renderQuestionContext,renderQuest
 import {renderLessonGuide} from '../lesson-content.js';
 import {renderMaterialTopics} from '../study-ui.js';
 import {goodsFollowupExamples} from '../goods-followup-study.js';
-const added=questions.filter(q=>q.id>=362);
+const added=questions.filter(q=>q.id>=362 && q.id<=373);
 test('Goods 12–23 preserve all 361 earlier records and add complete single-answer explanations',()=>{
   assert.equal(createHash('sha256').update(JSON.stringify(questions.filter(q=>q.id<=361))).digest('hex'),'20e0529f6f99b4863ac38acc618c6d2ac1b519b6d6fe76a251942253f2faaa00');
   assert.deepEqual(added.map(q=>q.id),Array.from({length:12},(_,i)=>362+i));

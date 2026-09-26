@@ -5,6 +5,7 @@ import { bidTopics } from './bid-execution.js';
 import { bidExecutionFollowupTopics, awardContractTopics } from './bid-followup-study.js';
 import { contractManagementTopics, contractChangeTopics } from './contract-management-study.js';
 import { goodsContractTopics } from './goods-contract-study.js';
+import { constructionSpecialTopics, constructionGeneralTopics } from './construction-study.js';
 import { law1FollowupTopics } from './law1-followup.js';
 import { law2FollowupTopics } from './law2-followup.js';
 import { planningFollowupTopics } from './planning-followup.js';
@@ -758,6 +759,7 @@ export const studyNotes = {
     ]
   },
   "3-06": {
+    "searchTopics": constructionGeneralTopics,
     "topics": [
       [
         "관급자재와 현장 조건",
@@ -776,6 +778,7 @@ export const studyNotes = {
     ]
   },
   "3-07": {
+    "searchTopics": constructionSpecialTopics,
     "topics": [
       [
         "입찰 방식과 변경 책임",

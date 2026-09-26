@@ -14,7 +14,7 @@ test('Attachment adds 23 MC and 20 OX with distinct stable IDs and supplied answ
   assert.deepEqual(ox.map(q=>q.options[q.answer]),['X','O','X','O','X','O','X','X','X','O','X','X','X','X','X','O','O','O','X','O']);
   assert.ok(added.every(q=>q.lesson==='1-02' && q.subject===1 && !q.sourceNumber));
   assert.equal(questions.filter(q=>q.id<=58).length,58);
-  assert.equal(new Set(questions.map(q=>q.id)).size,373);
+  assert.equal(new Set(questions.map(q=>q.id)).size,402);
   assert.ok(expected.every(q=>q.reconstructed && q.options.length===4));
   assert.ok(ox.every(q=>q.type==='ox' && q.options.join(',')==='O,X'));
 });

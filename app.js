@@ -4,6 +4,7 @@ import { renderStudyMaterials, renderStudyNotes, renderMaterialTopics } from './
 import { curriculum, partLabel, chapterLabel, resolveLessonId, migrateStudyState } from './curriculum.js';
 import { renderCurriculumOutline, renderChapterNavigation, renderPartDirectory, chapterUrl } from './curriculum-ui.js';
 
+import {renderChapterReview,relatedQuestions} from './chapter-review.js';
 import { findChapter, practiceQuestions, questionsByStatus, practiceStatuses, renderPracticeDirectory, renderPracticeStatus, renderPracticeNavigation, renderChapterFilter, renderPracticeGroups, renderQuestionExplanation, renderQuestionContext, questionLabel, answerLabel, attachmentQuestions, electronicQuestions, strategicQuestions, bidQuestions, followupQuestions } from './practice-ui.js';
 
 const paths = {
@@ -146,7 +147,7 @@ function practice() {
  const visible = questionsByStatus(all,state,practiceStatus);
  const statusLabel = practiceStatuses.find(([key])=>key===practiceStatus)[1];
  const action = '<button class="button" data-action="start-filtered" '+(!visible.length?'disabled':'')+'>'+icon('pen')+' '+(practiceStatus==='all'?'이 CHAPTER':statusLabel)+' '+visible.length+'문항 풀기</button>';
- return renderPracticeNavigation(practiceChapter)+head('QUESTION BANK',chapterLabel(practiceChapter.chapter)+' '+practiceChapter.title,partLabel(filter)+' · '+subjects[filter-1].title+' · 총 '+all.length+'문항',action)+tabs()+renderChapterFilter(filter,practiceChapter)+'<a class="practice-theory-link" href="'+chapterUrl(practiceChapter)+'">이 CHAPTER의 기본이론 읽기 →</a>'+renderPracticeStatus(practiceChapter,state,practiceStatus)+(visible.length?renderPracticeGroups(filter,practiceChapter,questionRow,visible):empty('check',statusLabel+' 문제가 없습니다','다른 상태를 선택하거나 전체 문제를 확인하세요.','<a class="button" href="#practice/'+filter+'/'+practiceChapter.id+'">전체 문제 보기 →</a>'));
+ return renderPracticeNavigation(practiceChapter)+head('QUESTION BANK',chapterLabel(practiceChapter.chapter)+' '+practiceChapter.title,partLabel(filter)+' · '+subjects[filter-1].title+' · 총 '+all.length+'문항',action)+tabs()+renderChapterFilter(filter,practiceChapter)+'<a class="practice-theory-link" href="'+chapterUrl(practiceChapter)+'">이 CHAPTER의 기본이론 읽기 →</a>'+renderChapterReview(practiceChapter.id,{withRelated:practiceStatus==='all'})+renderPracticeStatus(practiceChapter,state,practiceStatus)+(visible.length?renderPracticeGroups(filter,practiceChapter,questionRow,visible):empty('check',statusLabel+' 문제가 없습니다','다른 상태를 선택하거나 전체 문제를 확인하세요.','<a class="button" href="#practice/'+filter+'/'+practiceChapter.id+'">전체 문제 보기 →</a>'));
 }
 function questionRow(q) {
  const answered = state.answers[q.id] !== undefined;
@@ -223,6 +224,7 @@ document.addEventListener('click',event=>{
  if(action==='lesson') openLesson(id);
  if(action==='close-modal') document.querySelector('#modal').close();
  if(action==='study-plan'){const plan=document.querySelector('#study-plan');if(plan){plan.focus({preventScroll:true});plan.scrollIntoView({block:'start'});}}
+ if(action==='study-section'){const section=document.getElementById(el.dataset.target);if(section){section.focus({preventScroll:true});section.scrollIntoView({block:'start'});}}
  if(action==='subject') go('theory/'+id);
  if(action==='filter') go(page+(Number(id)?'/'+id:''));
  if(action==='bookmark-lesson'||action==='bookmark-question'){
@@ -240,6 +242,7 @@ document.addEventListener('click',event=>{
  if(action==='start-chapter04') startQuiz(strategicQuestions());
  if(action==='start-bid-execution') startQuiz(bidQuestions());
  if(action==='start-followup') startQuiz(followupQuestions(id));
+ if(action==='start-related'){const list=relatedQuestions(id);if(list.length)startQuiz(list);}
  if(action==='start-principles') startQuiz(questions.filter(q=>q.lesson==='1-02' && q.sourceNumber>=22 && q.sourceNumber<=25));
  if(action==='start-filtered'){const list=questionsByStatus(practiceQuestions(filter,practiceChapter?.id),state,practiceStatus);startQuiz([...list.filter(q=>q.core),...list.filter(q=>!q.core)]);}
  if(action==='quick-quiz') startQuiz(shuffled(questions).slice(0,5));

@@ -389,8 +389,8 @@ export const chapterLessons = [
     "subject": 3,
     "chapter": 6,
     "title": "공사계약관리",
-    "summary": "공사 착공부터 공정·품질·안전·기성·준공까지",
-    "minutes": 22,
+    "summary": "준공검사·대안·재하도급·실비정산: 후속 22~25번과 이행 관리",
+    "minutes": 35,
     "sections": [
       [
         "공사 계약문서와 착공",
@@ -413,8 +413,8 @@ export const chapterLessons = [
     "subject": 3,
     "chapter": 7,
     "title": "공사계약 특화 절차 및 하도급 관리",
-    "summary": "공사 발주 방식·공동계약·장기계속계약·하도급의 특수성",
-    "minutes": 26,
+    "summary": "공사 특화·하도급 01~25번: 종합심사·협의단가·PQ·전자지급과 원문 정정",
+    "minutes": 55,
     "sections": [
       [
         "기술형 입찰의 기본 구분",

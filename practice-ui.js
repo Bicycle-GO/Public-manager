@@ -1,11 +1,14 @@
 import { lessons, questions } from './data.js';
 import { chapterLabel, partLabel, resolveLessonId } from './curriculum.js';
+import {renderCoverageBadge} from './chapter-review.js';
 import { overviewConversation } from './overview-questions.js';
 import { principlesConversation } from './principles-questions.js';
 
 const esc = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 
 const followupSets = [
+  {collection:'construction-special',lesson:'3-07',subject:3,label:'공사 특화·하도급',date:'2026. 9. 26.',range:'01~25번',summary:'종합심사·기술형 입찰 → 설계변경 → PQ·SOQ·TP → 통보·보증·전자지급을 연결하세요.',note:'원문 02·06·10·12·13·15·17·19·25번의 모호한 보기와 해설을 보완했습니다. 특히 17번은 절차 식별 문제로 재구성했고, 19·25번은 원문에 정확한 답이 없어 보기를 수정했습니다. 보정 이유와 정답 비교는 이론과 채점 후 해설에 표시합니다.'},
+  {collection:'construction-general',lesson:'3-06',subject:3,label:'공사계약 후속',date:'2026. 9. 26.',range:'22~25번',summary:'준공검사·대안입찰·재하도급·실비정산을 확인하세요.',note:'앞선 공사계약 묶음에서 본문이 확인된 22~25번 4문항입니다. 이번에 01~21번을 복원하지 않았으며, CHAPTER 07의 별도 01~25번과 번호가 겹쳐도 다른 묶음으로 관리합니다.'},
   {collection:'law1-followup',lesson:'1-05',subject:1,label:'핵심 법령1',summary:'전자문서·계약 성립 → 보증·선금·지체상금 → 분쟁조정의 조건을 확인하세요.'},
   {collection:'law2-followup',lesson:'1-06',subject:1,label:'핵심 법령2·공정조달',summary:'조달사업·기관별 규정 → 공정조달·제재 → 권리구제를 구분하세요.'},
   {collection:'planning-followup',lesson:'2-01',subject:2,label:'조달 계획',summary:'수요예측·시장조사 → 비용·가격 → 위험과 일정을 연결하세요.'},
@@ -99,7 +102,7 @@ export function renderPracticeDirectory(subjectId, state) {
     const list=practiceQuestions(subjectId,l.id), remaining=questionsByStatus(list,state,'unanswered').length;
     const wrong=questionsByStatus(list,state,'wrong').length, saved=questionsByStatus(list,state,'saved').length;
     const done=list.length-remaining, progress=list.length?Math.round(done/list.length*100):0;
-    return `<a class="card practice-chapter-card" href="#practice/${subjectId}/${l.id}"><span class="chapter-code">${chapterLabel(l.chapter)}</span><h2>${esc(l.title)}</h2><p class="practice-card-total">총 ${list.length}문항 · 핵심 ${list.filter(q=>q.core).length}문항</p><div class="practice-card-progress"><span>풀이 완료 ${done} / ${list.length}</span><strong>${progress}%</strong></div><div class="progress-track"><span style="width:${progress}%"></span></div><div class="practice-card-counts"><span>미풀이 <b>${remaining}</b></span><span>오답 <b>${wrong}</b></span><span>북마크 <b>${saved}</b></span></div><span class="practice-card-open">문제 관리 페이지 →</span></a>`;
+    return `<a class="card practice-chapter-card" href="#practice/${subjectId}/${l.id}"><span class="chapter-code">${chapterLabel(l.chapter)}</span><h2>${esc(l.title)}</h2>${renderCoverageBadge(l.id)}<p class="practice-card-total">총 ${list.length}문항 · 핵심 ${list.filter(q=>q.core).length}문항</p><div class="practice-card-progress"><span>풀이 완료 ${done} / ${list.length}</span><strong>${progress}%</strong></div><div class="progress-track"><span style="width:${progress}%"></span></div><div class="practice-card-counts"><span>미풀이 <b>${remaining}</b></span><span>오답 <b>${wrong}</b></span><span>북마크 <b>${saved}</b></span></div><span class="practice-card-open">문제 관리 페이지 →</span></a>`;
   }).join('')}</section>`;
 }
 
