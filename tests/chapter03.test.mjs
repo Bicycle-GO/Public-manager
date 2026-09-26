@@ -15,7 +15,7 @@ test('Chapter 03 appends 25 distinct questions with the supplied answer position
   assert.deepEqual(added.map(q=>q.providedNumber),Array.from({length:25},(_,i)=>i+1));
   assert.deepEqual(added.map(q=>q.answer+1),[3,4,2,4,2,3,2,3,4,2,3,2,2,4,3,3,2,3,3,3,3,3,2,1,2]);
   assert.equal(questions.filter(q=>q.id<=101).length,101);
-  assert.equal(new Set(questions.map(q=>q.id)).size,402);
+  assert.equal(new Set(questions.map(q=>q.id)).size,427);
   assert.ok(added.every(q=>q.lesson==='1-03' && q.subject===1 && q.type==='multiple' && q.core && q.reconstructed));
   assert.ok(added.every(q=>!q.attachmentNumber && !q.sourceNumber));
 });

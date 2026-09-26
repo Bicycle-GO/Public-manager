@@ -8,7 +8,7 @@ import {renderPracticeDirectory} from '../practice-ui.js';
 import {renderLessonGuide} from '../lesson-content.js';
 
 test('Source audit distinguishes missing originals from registered and related questions',()=>{
- assert.equal(createHash('sha256').update(JSON.stringify(questions)).digest('hex'),'0c767af787be64834ec289e16e2368c5ed894656b139138895431796644cb27b');
+ assert.equal(createHash('sha256').update(JSON.stringify(questions.filter(q=>q.id<=402))).digest('hex'),'0c767af787be64834ec289e16e2368c5ed894656b139138895431796644cb27b');
  assert.deepEqual(chapterCoverage('3-04'),{total:1,conversation:0,existing:1,related:15});
  assert.deepEqual(chapterCoverage('3-05'),{total:1,conversation:0,existing:1,related:5});
  assert.deepEqual(chapterCoverage('3-06'),{total:5,conversation:4,existing:1,related:12});

@@ -1,0 +1,17 @@
+{
+  "total": 427,
+  "part2": 135,
+  "chapter": 36,
+  "newSet": 25,
+  "sharedSet": 10,
+  "gradedNew": 25,
+  "retry": true,
+  "bookmark": true,
+  "sharedRecords": true,
+  "theoryModal": true,
+  "search": true,
+  "mobileNoOverflow": true,
+  "persistAfterReload": true,
+  "errors": [],
+  "failed": []
+}

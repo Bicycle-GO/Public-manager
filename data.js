@@ -16,6 +16,7 @@ import { contractManagementQuestions } from './contract-management-questions.js'
 import { contractChangeQuestions } from './contract-change-questions.js';
 import { goodsContractQuestions } from './goods-contract-questions.js';
 import { constructionQuestions } from './construction-questions.js';
+import { evaluationSourceQuestions } from './evaluation-questions.js';
 
 export const sources = {
   "subjects": "https://www.law.go.kr/flDownload.do?bylClsCd=110201&flSeq=155928887&gubun=",
@@ -682,5 +683,6 @@ export const questions = [
   ...contractManagementQuestions,
   ...contractChangeQuestions,
   ...goodsContractQuestions,
-  ...constructionQuestions
+  ...constructionQuestions,
+  ...evaluationSourceQuestions
 ];
