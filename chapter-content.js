@@ -317,8 +317,8 @@ export const chapterLessons = [
     "subject": 3,
     "chapter": 3,
     "title": "물품 계약관리",
-    "summary": "대화11문항으로 물품계약·등록·낙찰·EXW/CIF·규격변경·선금·검사 이해하기",
-    "minutes": 35,
+    "summary": "대화23문항으로 물품계약·외자·신용장·지체·하자·국방·혁신·관리전환 이해하기",
+    "minutes": 55,
     "sections": [
       [
         "구매와 제조 계약의 확인",

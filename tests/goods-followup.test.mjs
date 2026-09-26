@@ -1,0 +1,51 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {createHash} from 'node:crypto';
+import {questions,lessons} from '../data.js';
+import {followupQuestions,renderPracticeGroups,renderQuestionContext,renderQuestionExplanation,questionsByStatus} from '../practice-ui.js';
+import {renderLessonGuide} from '../lesson-content.js';
+import {renderMaterialTopics} from '../study-ui.js';
+import {goodsFollowupExamples} from '../goods-followup-study.js';
+const added=questions.filter(q=>q.id>=362);
+test('Goods 12–23 preserve all 361 earlier records and add complete single-answer explanations',()=>{
+  assert.equal(createHash('sha256').update(JSON.stringify(questions.filter(q=>q.id<=361))).digest('hex'),'20e0529f6f99b4863ac38acc618c6d2ac1b519b6d6fe76a251942253f2faaa00');
+  assert.deepEqual(added.map(q=>q.id),Array.from({length:12},(_,i)=>362+i));
+  assert.deepEqual(added.map(q=>q.sourceNumber),Array.from({length:12},(_,i)=>12+i));
+  assert.deepEqual(added.map(q=>q.answer),[2,1,0,2,1,2,1,3,2,1,2,0]);
+  for(const q of added){
+    assert.equal(q.lesson,'3-03');assert.equal(q.collection,'goods-contract');
+    assert.equal(new Set(q.options).size,4);
+    assert.deepEqual(q.details.choices.map(c=>c.title),q.options);
+    assert.ok(q.details.steps.length>=3 && q.details.example.effects.length>=2);
+    assert.ok(q.details.correction && q.details.sources.length>=2);
+    const context=renderQuestionContext(q),html=renderQuestionExplanation(q);
+    assert.ok(!context.includes(q.topic) && !context.includes(q.details.takeaway));
+    assert.equal((html.match(/class="correct-choice"/g)||[]).length,1);
+    for(const label of ['단계별 풀이 과정','보기별 해설','가상 사례','기억할 한 문장','원문과 달라진 점'])assert.ok(html.includes(label));
+    assert.ok(!html.includes('undefined') && !html.includes('chatgpt-content-reference'));
+  }
+  assert.match(added[2].text,/유효.*채무불이행/);
+  assert.match(added[2].details.correction,/취소/);
+  assert.match(added[3].options[3],/금액뿐 아니라/);
+  assert.match(added[4].options[1],/강행법규/);
+  assert.match(added[8].options[2],/법정 지수조정률/);
+  assert.match(added[9].text,/토요일과 공휴일/);
+  assert.deepEqual(added[11].options,['관리전환','불용품 매각','국고귀속','물품 폐기']);
+});
+test('All 23 goods questions launch together, with searchable follow-up theory and correct delay calculations',()=>{
+  const list=followupQuestions('goods-contract'),chapter=lessons.find(l=>l.id==='3-03');
+  assert.equal(list.length,23);
+  const html=renderPracticeGroups(3,chapter,q=>'<b data-q="'+q.id+'"></b>');
+  assert.ok(html.includes('01~23번') && html.includes('23문항 풀기'));
+  for(const q of list)assert.equal(html.split('data-q="'+q.id+'"').length-1,1);
+  const state={answers:{351:2,362:0},bookmarks:['q351','q373']};
+  assert.deepEqual(questionsByStatus(list,state,'wrong').map(q=>q.id),[362]);
+  assert.equal(questionsByStatus(list,state,'unanswered').length,21);
+  const d=goodsFollowupExamples.delay;
+  assert.equal(d.amount*d.rate*d.totalDays,3750000);
+  assert.equal(d.amount*d.rate*(d.totalDays-d.excludedDays),2625000);
+  const theory=renderLessonGuide(chapter);
+  for(const s of ['12~23번','3,750,000원','2,625,000원','L/C','관리전환','양여','강행법규'])assert.ok(theory.includes(s),s);
+  for(const s of ['신용장','서류거래','방위사업청','혁신조달','관리전환'])assert.ok(renderMaterialTopics(s).includes('#theory/3/3-03'),s);
+  assert.ok(!renderLessonGuide(lessons.find(l=>l.id==='3-02')).includes('aria-label="물품 계약관리 12~23번 보충 학습"'));
+});

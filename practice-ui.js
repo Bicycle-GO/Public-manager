@@ -13,7 +13,7 @@ const followupSets = [
   {collection:'award-contract',lesson:'2-05',subject:2,label:'낙찰·계약',date:'2026. 9. 26.',range:'01~05·07~25번',summary:'협상순위·배점·동점 처리 → 계약·선금·보증 → 지체·정산·권리구제를 연결하세요.',note:'원대화의 06번은 정답표만 있고 문제 본문이 없어 제외했습니다. 나머지 24문항은 원문 번호를 유지합니다.'},
   {collection:'contract-management',lesson:'3-01',subject:3,label:'계약관리 일반',date:'2026. 9. 26.',summary:'CMP·착수·인력 → 위험·EVM·성과 → 하도급·지체·하자관리를 연결하세요.',note:'23번은 제공된 보기와 해설을 바탕으로 누락된 질문을 복원했습니다. CPI 등 계산 해석과 법령상 조건을 보완한 이유는 해설에 표시합니다.'},
   {collection:'contract-change',lesson:'3-02',subject:3,label:'계약변경·종결',date:'2026. 9. 26.',range:'01~25번',summary:'금액 조정·신규비목 → 검사·지급·보증 → 종료·분쟁 해결을 정리하세요.',note:'후속 19~25번을 추가했습니다. 지체상금 상한과 검사기간, 보증금 면제·귀속, 건축물 하자기간의 조건을 보완했습니다. 원문의 복수정답과 모호한 보기를 고친 이유를 해설에서 확인하세요.'},
-  {collection:'goods-contract',lesson:'3-03',subject:3,label:'물품 계약관리',date:'2026. 9. 26.',range:'01~11번',summary:'구매·제조·단가 → 등록·규격·낙찰 → EXW·CIF → 변경·선금·검사를 연결하세요.',note:'대화 후속 06~11번까지 반영했습니다. 제조·공급 등록서류와 협상배점의 적용 범위를 구분하고, 인코텀즈의 비용·위험 이전 및 신규비목 단가의 조건을 보완했습니다.'}
+  {collection:'goods-contract',lesson:'3-03',subject:3,label:'물품 계약관리',date:'2026. 9. 26.',range:'01~23번',summary:'구매·제조·단가 → 등록·규격·낙찰 → EXW·CIF → 변경·선금·검사를 연결하세요.',note:'첨부 12~17번과 후속 18~23번까지 반영했습니다. 해제·취소, 소액수의 조건, 외자·신용장, 국방·혁신조달과 관리전환·양여를 구분합니다. 원문 보정 이유와 공식 근거는 채점 후 해설에 표시합니다.'}
 ];
 
 export function followupQuestions(collection) {

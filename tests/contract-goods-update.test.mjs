@@ -7,7 +7,7 @@ import {renderLessonGuide} from '../lesson-content.js';
 import {renderMaterialTopics} from '../study-ui.js';
 import {changeFinalExamples} from '../contract-change-final-study.js';
 
-const additions=questions.filter(q=>q.id>=344);
+const additions=questions.filter(q=>q.id>=344 && q.id<=361);
 const change=followupQuestions('contract-change'),goods=followupQuestions('goods-contract');
 
 test('Eighteen appended questions preserve the previous 343 records and their saved-answer IDs',()=>{
@@ -31,7 +31,7 @@ test('Eighteen appended questions preserve the previous 343 records and their sa
 });
 
 test('Chapter launchers, repeated source numbering, and review filters remain independent',()=>{
-  for(const [list,count,id,range] of [[change,25,'3-02','01~25번'],[goods,11,'3-03','01~11번']]){
+  for(const [list,count,id,range] of [[change,25,'3-02','01~25번'],[goods,23,'3-03','01~23번']]){
     assert.equal(list.length,count);
     assert.deepEqual(list.map(q=>q.sourceNumber),Array.from({length:count},(_,i)=>i+1));
     const html=renderPracticeGroups(3,lessons.find(l=>l.id===id),q=>`<b data-q="${q.id}"></b>`);
@@ -44,7 +44,7 @@ test('Chapter launchers, repeated source numbering, and review filters remain in
   assert.deepEqual(questionsByStatus(goods,state,'wrong').map(q=>q.id),[351]);
   assert.deepEqual(questionsByStatus(change,state,'saved').map(q=>q.id),[344]);
   assert.deepEqual(questionsByStatus(goods,state,'saved').map(q=>q.id),[351]);
-  assert.equal(questionsByStatus(goods,state,'unanswered').length,10);
+  assert.equal(questionsByStatus(goods,state,'unanswered').length,22);
 });
 
 test('Rewritten questions state the conditions needed for one defensible answer',()=>{
@@ -73,7 +73,7 @@ test('Worked delay examples and searchable theory are scoped to the right chapte
   const changeHtml=renderLessonGuide(lessons.find(l=>l.id==='3-02'));
   const goodsHtml=renderLessonGuide(lessons.find(l=>l.id==='3-03'));
   for(const term of ['19~25번','25문항','180,000,000원','대형공공성','납부형태'])assert.ok(changeHtml.includes(term),term);
-  for(const term of ['01~11','EXW','CIF','76.5','낙찰률','14일','5일'])assert.ok(goodsHtml.includes(term),term);
+  for(const term of ['01~23','EXW','CIF','76.5','낙찰률','14일','5일'])assert.ok(goodsHtml.includes(term),term);
   assert.ok(!goodsHtml.includes('계약변경·종결 19~25번 보충 학습'));
   for(const [query,id] of [['지체상금 상한','3-02'],['대형공공성','3-02'],['EXW','3-03'],['CIF','3-03'],['제조등록','3-03']])assert.ok(renderMaterialTopics(query).includes(`#theory/3/${id}`),query);
 });

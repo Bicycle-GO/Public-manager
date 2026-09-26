@@ -1,3 +1,5 @@
+import {goodsFollowupQuestions} from './goods-followup-questions.js';
+
 // Source numbering is local to the goods-contract chapter, not the earlier change chapter.
 export const goodsContractSources = {
   conversation:{title:'문제 정리 및 해설 · 물품 계약관리 01~11번 대화',url:'https://chatgpt.com/c/6ab66924-ae98-83ee-b3be-c9780d0ac547'},
@@ -118,4 +120,4 @@ export const goodsContractQuestions=entries.map(q=>({
   details:{conceptTitle:q.topic,concept:q.concept,steps:q.steps,choices:q.options.map((title,i)=>({title,reason:q.reasons[i]})),
     example:{title:q.example[0],situation:q.example[1],effects:q.example[2]},takeaway:q.takeaway,
     correction:q.correction,caution:q.caution,sources:[...q.refs.map(key=>goodsContractSources[key]),goodsContractSources.conversation]}
-}));
+})).concat(goodsFollowupQuestions);
