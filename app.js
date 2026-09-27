@@ -6,6 +6,7 @@ import { renderCurriculumOutline, renderChapterNavigation, renderPartDirectory, 
 
 import {renderChapterReview,relatedQuestions} from './chapter-review.js';
 import {evaluationQuestions,isEvaluationQuestion,questionInChapter} from './evaluation-study.js';
+import {evaluationCoreQuestions,evaluationExpectedQuestions,evaluationPracticeQuestions} from './evaluation-questions.js';
 import { findChapter, practiceQuestions, questionsByStatus, practiceStatuses, renderPracticeDirectory, renderPracticeStatus, renderPracticeNavigation, renderChapterFilter, renderPracticeGroups, renderQuestionExplanation, renderQuestionContext, questionLabel, answerLabel, attachmentQuestions, electronicQuestions, strategicQuestions, bidQuestions, followupQuestions } from './practice-ui.js';
 
 const paths = {
@@ -153,7 +154,7 @@ function practice() {
 function questionRow(q) {
  const answered = state.answers[q.id] !== undefined;
  const correct = state.answers[q.id]===q.answer;
- return `<article class="question-row card"><span class="question-index">${q.providedNumber ? '<small>자료</small>'+String(q.providedNumber).padStart(2,'0') : q.attachmentNumber ? '<small>'+ (q.type==='ox'?'OX':'첨부')+'</small>'+String(q.attachmentNumber).padStart(2,'0') : q.sourceNumber ? '<small>대화</small>'+String(q.sourceNumber).padStart(2,'0') : String(q.id).padStart(2,'0')}</span><button class="question-title" data-action="single-question" data-id="${q.id}"><div><span class="subject-label">제${q.subject}과목</span><span class="difficulty">${q.type==='ox'?'OX 문제':q.core?'단원별 핵심문제':q.difficulty}</span>${answered ? `<span class="answer-status ${correct?'correct':'incorrect'}">${correct?'정답':'복습 필요'}</span>` : ''}</div><h3>${q.text}</h3>${q.adapted?'<span class="adapted-badge">학습용 보정 · 해설에서 확인</span>':''}<p>${chapterLabel(lessons.find(l=>l.id===q.lesson).chapter)} · ${lessons.find(l=>l.id===q.lesson).title}</p></button><button class="icon-button ${state.bookmarks.includes('q'+q.id)?'bookmarked':''}" data-action="bookmark-question" data-id="${q.id}" aria-label="${esc(questionLabel(q))} 문제 북마크" aria-pressed="${state.bookmarks.includes('q'+q.id)}">${icon('bookmark')}</button><button class="round-arrow" data-action="single-question" data-id="${q.id}" aria-label="${esc(questionLabel(q))} 문제 풀기">${icon('arrow')}</button></article>`;
+ return `<article class="question-row card"><span class="question-index">${q.practiceNumber ? '<small>'+(q.collection==='proposal-evaluation-core'?'핵심':'예상')+'</small>'+String(q.practiceNumber).padStart(2,'0') : q.providedNumber ? '<small>자료</small>'+String(q.providedNumber).padStart(2,'0') : q.attachmentNumber ? '<small>'+ (q.type==='ox'?'OX':'첨부')+'</small>'+String(q.attachmentNumber).padStart(2,'0') : q.sourceNumber ? '<small>대화</small>'+String(q.sourceNumber).padStart(2,'0') : String(q.id).padStart(2,'0')}</span><button class="question-title" data-action="single-question" data-id="${q.id}"><div><span class="subject-label">제${q.subject}과목</span><span class="difficulty">${q.type==='ox'?'OX 문제':q.core?'단원별 핵심문제':q.difficulty}</span>${answered ? `<span class="answer-status ${correct?'correct':'incorrect'}">${correct?'정답':'복습 필요'}</span>` : ''}</div><h3>${q.text}</h3>${q.adapted?'<span class="adapted-badge">학습용 보정 · 해설에서 확인</span>':''}<p>${chapterLabel(lessons.find(l=>l.id===q.lesson).chapter)} · ${lessons.find(l=>l.id===q.lesson).title}</p></button><button class="icon-button ${state.bookmarks.includes('q'+q.id)?'bookmarked':''}" data-action="bookmark-question" data-id="${q.id}" aria-label="${esc(questionLabel(q))} 문제 북마크" aria-pressed="${state.bookmarks.includes('q'+q.id)}">${icon('bookmark')}</button><button class="round-arrow" data-action="single-question" data-id="${q.id}" aria-label="${esc(questionLabel(q))} 문제 풀기">${icon('arrow')}</button></article>`;
 }
 function questionTheoryLinks(q) {
  return `${isEvaluationQuestion(q)?'<button class="text-button" data-action="lesson" data-id="2-04">입찰제안평가 이론 읽기 →</button>':''}<button class="text-button" data-action="lesson" data-id="${q.lesson}">관련 이론 읽기 ${icon('arrow')}</button>`;
@@ -248,6 +249,9 @@ document.addEventListener('click',event=>{
  if(action==='start-bid-execution') startQuiz(bidQuestions());
  if(action==='start-followup') startQuiz(followupQuestions(id));
  if(action==='start-evaluation') startQuiz(evaluationQuestions,'practice','2-04');
+ if(action==='start-evaluation-core') startQuiz(evaluationCoreQuestions,'practice','2-04');
+ if(action==='start-evaluation-expected') startQuiz(evaluationExpectedQuestions,'practice','2-04');
+ if(action==='start-evaluation-all') startQuiz(evaluationPracticeQuestions,'practice','2-04');
  if(action==='start-related'){const list=relatedQuestions(id);if(list.length)startQuiz(list);}
  if(action==='start-principles') startQuiz(questions.filter(q=>q.lesson==='1-02' && q.sourceNumber>=22 && q.sourceNumber<=25));
  if(action==='start-filtered'){const list=questionsByStatus(practiceQuestions(filter,practiceChapter?.id),state,practiceStatus);startQuiz([...list.filter(q=>q.core),...list.filter(q=>!q.core)]);}

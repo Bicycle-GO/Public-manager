@@ -1,0 +1,21 @@
+{
+  "chapter": "2-04",
+  "available": 36,
+  "newCore": 10,
+  "newExpected": 15,
+  "existingOwn": 1,
+  "shared": 10,
+  "global": 427,
+  "part2": 135,
+  "gradedNew": 25,
+  "existingRecordPreserved": true,
+  "wrongRetry": true,
+  "bookmarks": true,
+  "sourceChapterStill25": true,
+  "resultReturnsToStartingChapter": true,
+  "foundationFromQuizAndSearch": true,
+  "persistAfterReload": true,
+  "mobileNoOverflow": true,
+  "consoleErrors": [],
+  "failedRequests": []
+}

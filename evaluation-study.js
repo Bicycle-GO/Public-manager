@@ -1,4 +1,5 @@
 import {awardContractQuestions} from './award-contract-questions.js';
+import {renderEvaluationFoundations} from './evaluation-foundations.js';
 import {bidFollowupSources, awardScoreExample} from './bid-followup-study.js';
 
 const esc = value => String(value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -26,7 +27,7 @@ export const evaluationTieExample = [
 ];
 
 export function renderEvaluationPracticeIntro() {
- return `<div class="card overview-question-intro evaluation-intro"><span class="subject-label">입찰제안평가 재검토 · 2026. 9. 26.</span><h3>평가 관련 대화 10문항을 함께 관리합니다</h3><p>CHAPTER 05에 수록된 협상적격자·배점·동점 처리·결과 분석 등 10문항을 이 단원에서도 풀 수 있습니다. 기존 확인문제 1개와 함께 총 11문항입니다.</p><p class="small-text">공유 문항의 정답·오답·북마크는 두 단원에서 같은 기록을 사용합니다. PART와 전체 문제 수에는 한 번만 셉니다. 아래 원래 수록 단원과 대화 번호도 유지합니다.</p><p class="small-text">확인 범위: 조회된 낙찰·계약 대화에서 평가 관련 문항을 선별했습니다. 별도의 ‘입찰제안평가 01~25번’ 원문 묶음은 이번 조회에서 확인되지 않아 전체 복원으로 표시하지 않습니다.</p><div class="overview-intro-actions"><button class="button" data-action="start-evaluation">평가 관련 대화 10문항 풀기 →</button><a href="#theory/2/2-04">평가 절차·계산·정정 내용 읽기 →</a></div></div>`;
+ return `<div class="card overview-question-intro evaluation-intro"><span class="subject-label">입찰제안평가 학습 · 2026. 9. 26.</span><h3>기초를 익히는 핵심 10문항 · 적용하는 예상 15문항</h3><p>핵심문제로 용어·평가 절차를 익힌 뒤, 예상문제로 통과점수·협상순위·동점·협상 결렬과 계약 연결을 연습하세요. 채점 후 단계별 풀이, 네 보기 해설, 공공기관 가상 사례와 암기 포인트를 제공합니다.</p><div class="overview-intro-actions"><button class="button" data-action="start-evaluation-core">핵심 10문항 풀기 →</button><button class="soft-button" data-action="start-evaluation-expected">예상 15문항 풀기 →</button><button class="soft-button" data-action="start-evaluation-all">새 문제 25문항 모두 풀기 →</button><a href="#theory/2/2-04">용어부터 기초 학습하기 →</a></div><p class="small-text">핵심 10개와 예상 09~15번은 자체 제작, 예상 01~07번은 첨부 예상문제 기반, 예상 08번은 첨부 점수표 기반입니다. 공식 기출이나 미확보 원문을 복원한 문제로 표시하지 않습니다.</p><p class="small-text">새 문제 25개 + 기존 확인문제 1개 + CHAPTER 05 공유 10개 = 총 36문항입니다. 공유 문항의 답안·북마크는 두 단원에서 같고 PART·전체 문제 수에는 한 번만 셉니다.</p><details><summary>기존 대화의 평가 관련 10문항 이어 풀기</summary><p>낙찰·계약 대화의 평가 관련 10문항을 원래 번호로 연결했습니다. 별도 ‘입찰제안평가 01~25번’ 대화 원문을 모두 확보한 것은 아니며, 이번에 만든 새 문제와 구분합니다.</p><button class="soft-button" data-action="start-evaluation">평가 관련 대화 10문항 풀기 →</button></details></div>`;
 }
 function table(title,headers,rows) {
  return `<div class="lesson-table-wrap" tabindex="0" role="region" aria-label="${esc(title)}"><table class="lesson-table"><caption>${esc(title)}</caption><thead><tr>${headers.map(h=>`<th scope="col">${esc(h)}</th>`).join('')}</tr></thead><tbody>${rows.map(row=>`<tr>${row.map((c,i)=>i?`<td>${esc(c)}</td>`:`<th scope="row">${esc(c)}</th>`).join('')}</tr>`).join('')}</tbody></table></div>`;
@@ -36,8 +37,8 @@ const topic = i => `<h3>${esc(evaluationTopics[i][0])}</h3><p>${esc(evaluationTo
 
 export function renderEvaluationStudy(lesson) {
  if(lesson.id!=='2-04')return '';
- return `<div class="lesson-guide evaluation-study" aria-label="입찰제안평가 심화 정리">
- <section class="learning-goal"><span class="case-label">입찰 핵심정리 대화 재검토 · 2026. 9. 26.</span><h2>입찰제안평가 · 기준부터 결과 검토까지</h2><p>국가계약의 협상에 의한 계약을 중심으로 정리합니다. 평가 기준 확인 → 기술평가 → 가격 개찰·평가 → 협상적격 판단 → 순위·동점 처리 → 결과 기록·통지 → 협상의 흐름을 구분하세요. 다른 낙찰방식의 기준을 그대로 섞지 않습니다.</p><p class="small-text">확인된 낙찰·계약 대화 중 평가 관련 10문항을 연결했습니다. 별도 입찰제안평가 원문 문제 묶음 전체가 확보된 것은 아닙니다. 모든 기관·점수 사례는 학습용 가정입니다.</p><a class="button" href="#practice/2/2-04">입찰제안평가 11문항 관리·풀이 →</a></section>
+ return `${renderEvaluationFoundations()}<div class="lesson-guide evaluation-study" aria-label="입찰제안평가 심화 정리">
+ <section class="learning-goal"><span class="case-label">입찰 핵심정리 대화 재검토 · 2026. 9. 26.</span><h2>입찰제안평가 · 기준부터 결과 검토까지</h2><p>국가계약의 협상에 의한 계약을 중심으로 정리합니다. 평가 기준 확인 → 기술평가 → 가격 개찰·평가 → 협상적격 판단 → 순위·동점 처리 → 결과 기록·통지 → 협상의 흐름을 구분하세요. 다른 낙찰방식의 기준을 그대로 섞지 않습니다.</p><p class="small-text">확인된 낙찰·계약 대화 중 평가 관련 10문항을 연결했습니다. 별도 입찰제안평가 원문 문제 묶음 전체가 확보된 것은 아닙니다. 모든 기관·점수 사례는 학습용 가정입니다.</p><a class="button" href="#practice/2/2-04">입찰제안평가 36문항 관리·풀이 →</a></section>
  <section>${topic(0)}${table('평가에서 무엇을 근거로 판단할까?',['구분','가상 자료','판단 방법'],[
  ['참가자격 확인','업종 등록·면허 등 공고상 요건','경쟁 참여 요건부터 확인; 기술점수와 구별'],
  ['정량평가','실적증명·경영상태 증빙 등','공고한 산식과 기준일에 따라 객관적으로 확인'],

@@ -221,8 +221,8 @@ export const chapterLessons = [
     "subject": 2,
     "chapter": 4,
     "title": "입찰제안평가",
-    "summary": "기술·가격 배점, 협상적격자 85%, 동점 처리와 결과 분석",
-    "minutes": 30,
+    "summary": "기초 용어부터 협상적격·순위·동점까지, 핵심 10·예상 15문항으로 연습",
+    "minutes": 45,
     "sections": [
       [
         "평가 기준의 일관성",
