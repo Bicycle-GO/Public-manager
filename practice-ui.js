@@ -1,4 +1,5 @@
 import { lessons, questions } from './data.js';
+import { getQuestionDetails } from './question-solutions.js';
 import { chapterLabel, partLabel, resolveLessonId } from './curriculum.js';
 import {renderCoverageBadge} from './chapter-review.js';
 import {questionInChapter, renderEvaluationPracticeIntro} from './evaluation-study.js';
@@ -142,7 +143,25 @@ export function renderQuestionContext(q) {
   return `${q.attachmentNumber || q.providedNumber ? `<p class="question-origin">${esc(questionLabel(q))}${q.reconstructed?' · 선택지 재구성':''}${q.adapted?' · 학습용 보정':''}</p>` : q.sourceNumber ? `<p class="question-origin">공유 대화 ${String(q.sourceNumber).padStart(2,'0')}번 · ${esc(q.topic)}${q.adapted ? ' · 학습용 보정' : ''}</p>` : ''}${q.passage?.length ? `<section class="question-passage" aria-label="문제 보기"><h3>보기</h3>${q.passage.map(line => `<p>${esc(line)}</p>`).join('')}</section>` : ''}`;
 }
 
-export function renderQuestionExplanation(q) {
-  const detail = q.details;
-  return `<p>${esc(q.explanation)}</p>${detail ? `<div class="detailed-explanation"><h3>${esc(detail.conceptTitle || '개념 이해')}</h3><p>${esc(detail.concept)}</p>${detail.steps?.length ? `<section class="solution-process"><h3>단계별 풀이 과정</h3><ol>${detail.steps.map(([title,body]) => `<li><strong>${esc(title)}</strong><p>${esc(body)}</p></li>`).join('')}</ol></section>` : ''}<h3>${q.type==='ox'?'OX 판단 근거':'보기별 해설'}</h3><ol class="choice-rationale">${detail.choices.map((choice, i) => `<li class="${i === q.answer ? 'correct-choice' : ''}"><strong>${q.type==='ox'?esc(choice.title):`${i + 1}번 · ${esc(choice.title)}`}</strong><p>${esc(choice.reason)}</p></li>`).join('')}</ol>${detail.example ? `<section class="explanation-example"><span class="subject-label">이해를 돕는 가상 사례</span><h3>${esc(detail.example.title)}</h3><p>${esc(detail.example.situation)}</p><ul>${detail.example.effects.map(effect => `<li>${esc(effect)}</li>`).join('')}</ul></section>` : ''}<p class="explanation-takeaway"><strong>기억할 한 문장</strong><br>${esc(detail.takeaway)}</p>${detail.caution?`<p>${esc(detail.caution)}</p>`:''}${q.reconstructed?'<p class="small-text">객관식 보기는 제공자료의 문항과 풀이를 바탕으로 재구성했습니다.</p>':''}${detail.correction ? `<section class="question-correction"><h3>원문과 달라진 점 · 확인한 근거</h3><p>${esc(detail.correction)}</p></section>` : ''}${detail.sources?.length ? `<div class="explanation-sources"><strong>해설 참고 자료</strong>${detail.sources.map(source => `<a href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.title)} ↗</a>`).join('')}</div>` : ''}</div>` : ''}`;
+export function renderQuestionExplanation(q, selected) {
+  const detail = getQuestionDetails(q);
+  const hasSelection = Number.isInteger(selected) && selected >= 0 && selected < q.options.length;
+  const matching = hasSelection && selected === q.answer;
+  const label = index => q.type==='ox' ? `${esc(q.options[index])} · ${index===0?'옳다':'틀리다'}` : `${answerLabel(q,index)} · ${esc(q.options[index])}`;
+  const correctReason = detail?.choices?.[q.answer]?.reason || q.explanation;
+  const selectedReason = hasSelection ? detail?.choices?.[selected]?.reason : null;
+  const review = `<section class="answer-review" aria-label="답안 비교"><h3>${hasSelection?'내 답과 정답 비교':'정답의 핵심 근거'}</h3><div class="answer-review-grid ${hasSelection && !matching?'has-comparison':''}">${hasSelection && !matching ? `<div class="answer-review-choice my-answer"><span>내가 고른 보기</span><strong>${label(selected)}</strong>${selectedReason?`<p>${esc(selectedReason)}</p>`:''}</div>`:''}<div class="answer-review-choice correct-answer"><span>${matching?'내 답 · 정답 보기':'정답 보기'}</span><strong>${label(q.answer)}</strong><p>${esc(correctReason)}</p></div></div></section>`;
+  if (!detail) return `${review}<p>${esc(q.explanation)}</p>`;
+  return `${review}<div class="detailed-explanation">
+    <section class="solution-summary"><h3>핵심 해설</h3><p>${esc(q.explanation)}</p></section>
+    <section><h3>${esc(detail.conceptTitle || '개념 이해')}</h3><p>${esc(detail.concept)}</p></section>
+    ${detail.steps?.length ? `<section class="solution-process"><h3>단계별 풀이 과정</h3><ol>${detail.steps.map(([title,body]) => `<li><strong>${esc(title)}</strong><p>${esc(body)}</p></li>`).join('')}</ol></section>` : ''}
+    <section><h3>${q.type==='ox'?'OX 판단 근거':'보기별 해설'}</h3><ol class="choice-rationale">${(detail.choices || []).map((choice,i) => `<li class="${i===q.answer?'correct-choice':hasSelection && i===selected?'selected-choice':''}"><div class="choice-rationale-heading"><strong>${q.type==='ox'?esc(choice.title):`${i+1}번 · ${esc(choice.title)}`}</strong>${i===q.answer?'<span class="rationale-label">정답 보기</span>':hasSelection && i===selected?'<span class="rationale-label my-selection-label">내 선택</span>':''}</div><p>${esc(choice.reason)}</p></li>`).join('')}</ol></section>
+    ${detail.example ? `<section class="explanation-example"><span class="subject-label">이해를 돕는 가상 사례</span><h3>${esc(detail.example.title)}</h3><p>${esc(detail.example.situation)}</p><ul>${detail.example.effects.map(effect => `<li>${esc(effect)}</li>`).join('')}</ul></section>` : ''}
+    <p class="explanation-takeaway"><strong>기억할 한 문장</strong><br>${esc(detail.takeaway)}</p>
+    ${detail.caution?`<p class="solution-caution"><strong>주의할 점</strong><br>${esc(detail.caution)}</p>`:''}
+    ${q.reconstructed?'<p class="small-text">객관식 보기는 제공자료의 문항과 풀이를 바탕으로 재구성했습니다.</p>':''}
+    ${detail.correction?`<section class="question-correction"><h3>원문과 달라진 점 · 확인한 근거</h3><p>${esc(detail.correction)}</p></section>`:''}
+    ${detail.sources?.length?`<div class="explanation-sources"><strong>해설 참고 자료</strong>${detail.sources.map(source=>`<a href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">${esc(source.title)} ↗</a>`).join('')}</div>`:''}
+  </div>`;
 }

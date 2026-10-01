@@ -52,5 +52,8 @@ test('Modern procurement question explains answer 2, all four choices and an ill
   for (const choice of q.details.choices) assert.ok(html.includes(choice.reason));
   for (const source of q.details.sources) assert.equal(new URL(source.url).hostname.replace(/^www\./, ''), 'pps.go.kr');
   const ordinary = questions.find(q => !q.details);
-  assert.equal(renderQuestionExplanation(ordinary), `<p>${ordinary.explanation}</p>`);
+  const supplemental = renderQuestionExplanation(ordinary);
+  assert.ok(supplemental.includes(ordinary.explanation));
+  assert.ok(supplemental.includes('단계별 풀이 과정') && supplemental.includes('보기별 해설'));
+  assert.ok(supplemental.includes('이해를 돕는 가상 사례'));
 });
