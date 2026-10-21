@@ -1,0 +1,28 @@
+.answer-review{margin:24px 0 28px;color:#263f61;overflow-wrap:anywhere}
+.answer-review h3{font-size:21px;margin:0 0 16px;color:#164b9f;line-height:1.6}
+.answer-review-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.answer-review-grid.has-comparison{grid-template-columns:repeat(2,minmax(0,1fr))}
+.answer-review-choice{border:1px solid #b8cef0;border-radius:12px;padding:22px;background:#f1f6ff;min-width:0}
+.answer-review-choice>span{display:block;font-size:15px;font-weight:600;color:#2159ac;margin-bottom:10px}
+.answer-review-choice>strong{display:block;font-size:18px;line-height:1.8}
+.answer-review-choice>p{font-size:17px;line-height:1.9;margin:14px 0 0}
+.answer-review-choice.my-answer{background:#fff8f5;border-color:#e9c8b9}
+.answer-review-choice.my-answer>span{color:#9b4e34}
+.detailed-explanation{font-size:18px;line-height:1.95}
+.detailed-explanation h3{font-size:21px;margin:30px 0 16px}
+.detailed-explanation p{font-size:18px;line-height:1.95}
+.detailed-explanation .solution-process li{padding:12px 0 12px 6px}
+.detailed-explanation .solution-process strong{font-size:18px}
+.choice-rationale{gap:16px}
+.choice-rationale li{padding:22px}
+.choice-rationale li.correct-choice{background:#f1f6ff;border-color:#8eafe5}
+.choice-rationale li.selected-choice{background:#fff8f5;border-color:#e9c8b9}
+.choice-rationale-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:14px}
+.choice-rationale-heading>strong{font-size:18px;line-height:1.8;min-width:0;overflow-wrap:anywhere}
+.rationale-label{flex-shrink:0;color:#1d53a5;background:#e4edff;border-radius:6px;padding:4px 9px;font-size:13px;font-weight:600;white-space:nowrap}
+.rationale-label.my-selection-label{color:#9b4e34;background:#ffebe1}
+.detailed-explanation .explanation-example{padding:24px;margin-top:30px}
+.detailed-explanation .explanation-takeaway{padding:22px;margin-top:28px}
+.solution-caution{background:#fffaf0;border:1px solid #eadbbd;border-radius:10px;padding:20px;color:#685126}
+@media(max-width:900px){.answer-review-grid.has-comparison{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:700px){.answer-review h3,.detailed-explanation h3{font-size:20px}.answer-review-choice,.choice-rationale li{padding:18px}.answer-review-choice>strong,.choice-rationale-heading>strong,.detailed-explanation,.detailed-explanation p{font-size:17px}.choice-rationale-heading{display:block}.rationale-label{display:inline-block;margin-top:10px}.detailed-explanation .explanation-example{padding:20px 18px}}
