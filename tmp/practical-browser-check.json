@@ -1,0 +1,21 @@
+{
+  "areas": 8,
+  "units": 25,
+  "checks": 75,
+  "writtenQuestionsPreserved": 427,
+  "additionalPreservedSourceQuestions": 25,
+  "verified": [
+    "dashboard and written-course entry",
+    "25 deep links",
+    "draft and self-check persistence",
+    "independent written records",
+    "completion and reset after edits",
+    "navigation and prerequisites",
+    "four-week plan",
+    "merged written-question sets",
+    "print view and print media",
+    "390px mobile menu and overflow"
+  ],
+  "errors": [],
+  "failures": []
+}

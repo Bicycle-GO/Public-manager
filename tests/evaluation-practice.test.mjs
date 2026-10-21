@@ -13,10 +13,10 @@ test('New core and expected sets append 25 unique IDs without changing any of th
  assert.deepEqual(added.map(q=>q.id),Array.from({length:25},(_,i)=>403+i));
  assert.deepEqual(core.map(q=>q.practiceNumber),Array.from({length:10},(_,i)=>i+1));
  assert.deepEqual(expected.map(q=>q.practiceNumber),Array.from({length:15},(_,i)=>i+1));
- assert.equal(new Set(questions.map(q=>q.id)).size,427);
- assert.equal(practiceQuestions(2,'2-04').length,36);
+ assert.equal(new Set(questions.map(q=>q.id)).size,452);
+ assert.equal(practiceQuestions(2,'2-04').length,61);
  assert.equal(practiceQuestions(2,'2-05').length,25);
- assert.equal(practiceQuestions(2).length,135);
+ assert.equal(practiceQuestions(2).length,160);
  assert.ok(added.every(q=>q.lesson==='2-04'&&q.subject===2&&!q.sourceNumber));
  assert.ok(core.every(q=>q.core&&q.origin.includes('자체 제작')));
  assert.ok(expected.slice(0,7).every(q=>q.adapted&&q.origin.includes('첨부 예상')));

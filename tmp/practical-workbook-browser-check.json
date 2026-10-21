@@ -1,0 +1,26 @@
+{
+  "questions": 12,
+  "captures": 8,
+  "types": {
+    "calculation": 5,
+    "essay": 4,
+    "blank": 2,
+    "short": 1
+  },
+  "checklistItems": 51,
+  "allQuestionDeepLinks": true,
+  "existingWrittenAndPracticalRecordsPreserved": true,
+  "draftRestored": true,
+  "checksAndCompletionResetOnEdit": true,
+  "filters": true,
+  "print": {
+    "workbook": 12,
+    "combinedUnits": 25
+  },
+  "mobileWidths": [
+    390,
+    320
+  ],
+  "errors": [],
+  "failures": []
+}

@@ -1,0 +1,20 @@
+{
+  "chapterReturn": true,
+  "sharedChapterReturn": true,
+  "mixedQuizReturn": true,
+  "gradedRecordsPreserved": true,
+  "practice60": true,
+  "official80": true,
+  "subjectDistribution": true,
+  "unique": true,
+  "oxExcluded": true,
+  "answerChanges": true,
+  "deferredGrading": true,
+  "unanswered": true,
+  "expiryDuringConfirmation": true,
+  "cancelNotRecorded": true,
+  "mobileNoOverflow": true,
+  "persistence": true,
+  "errors": [],
+  "failed": []
+}

@@ -3,6 +3,30 @@
 @media(max-width:700px){.library-card{padding:23px;gap:17px;flex-wrap:wrap}.library-card>.subject-icon{width:43px;height:43px}.library-card>div{flex:1;min-width:190px}.library-card h2{font-size:16px}.library-card p{font-size:11px}.library-open{width:100%;justify-content:flex-end;border-top:1px solid #e3e9f2;padding-top:16px;margin-top:3px}.chapter-nav{grid-template-columns:1fr;padding:18px 12px}.chapter-nav>a{padding:12px 10px}.reading-card .lesson-content{padding:25px 22px}.reading-card .lesson-content>h2{font-size:21px}.reading-card .lesson-content section p{font-size:14px}.reading-actions{padding:0 22px 22px}.chapter-pagination{padding:20px 22px;font-size:11px}.page-heading>.soft-button[href]{font-size:10px;gap:5px;margin-top:5px;white-space:normal;min-width:85px}}
 
 
+/* Quiz navigation and mock exam formats. */
+.quiz-heading-actions { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+.quiz-heading-actions .quiz-chapter-link { width: 44px; height: 44px; padding: 0; }
+.quiz-heading-actions .soft-button { min-height: 44px; white-space: nowrap; }
+.mock-format-picker { border: 0; padding: 0; margin: 24px 0; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; text-align: left; }
+.mock-format-picker legend { font-size: 14px; font-weight: 600; margin-bottom: 10px; }
+.mock-format-option { display: flex; align-items: center; gap: 10px; padding: 16px; border: 1px solid #ccd8e8; border-radius: 10px; cursor: pointer; }
+.mock-format-option:has(:checked) { border-color: #285daf; background: #edf3fc; }
+.mock-format-option:focus-within { outline: 2px solid #285daf; outline-offset: 3px; }
+.mock-format-option input { accent-color: #285daf; width: 18px; height: 18px; flex-shrink: 0; }
+.mock-format-option strong { display: block; font-size: 16px; }
+.mock-format-option small { display: block; margin-top: 6px; font-size: 13px; color: #586c88; line-height: 1.6; }
+.quiz-side .exam-question-dots { position: relative; grid-template-columns: repeat(5,minmax(0,1fr)); gap: 6px; }
+.exam-verdict { padding: 14px; border-radius: 10px; background: #f1f5fb; }
+.exam-verdict.passed strong { color: #226348; }
+.exam-verdict.needs-review strong { color: #875500; }
+.result-explanation { overflow-wrap: anywhere; min-width: 0; }
+@media (max-width: 900px) { .quiz-side .exam-question-dots { grid-template-columns: repeat(10,minmax(0,1fr)); max-height: 176px; overflow-y: auto; } }
+@media (max-width: 600px) {
+  .mock-format-picker { grid-template-columns: 1fr; }
+  .quiz-side .exam-question-dots { grid-template-columns: repeat(6,minmax(0,1fr)); }
+  .quiz-heading-actions .soft-button { font-size: 14px; }
+}
+
 /* Chapter source coverage and links to existing questions. */
 .chapter-source-review { margin: 20px 0; padding: 24px; }
 .coverage-status { display: block; font-size: 12px; line-height: 1.6; color: #765018; background: #fff6df; border: 1px solid #efdcab; border-radius: 8px; padding: 7px 10px; margin: 10px 0; }

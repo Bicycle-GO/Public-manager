@@ -1,0 +1,18 @@
+{
+  "ok": true,
+  "checks": [
+    "Legacy written/practical/workbook/exam records preserved; new course starts independently.",
+    "New chapter completion and case drafts/checks restore; editing resets case review only and escapes HTML.",
+    "All 55 practical questions and combined PART/source/status/search filters work.",
+    "Old unit and capture URLs redirect to expected questions and retain editable answers. Capture solutions link to new theory.",
+    "Every one of the 18 theory topics and 55 practical problem destinations renders.",
+    "Written PART/chapter quiz remains accessible with four choices; crosswalk and print views cover every practical item.",
+    "Written/practical mock choices, existing history and active practical answer restoration remain available.",
+    "390px and 320px layouts fit without horizontal page overflow.",
+    "Updated exam facts and mobile sidebar entry work at 390px/320px; completion keeps focus and blank completed answers stay unwritten."
+  ],
+  "errors": [],
+  "failed": [],
+  "visitedTheory": 18,
+  "visitedPractical": 55
+}

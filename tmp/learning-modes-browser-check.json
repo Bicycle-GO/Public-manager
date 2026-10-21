@@ -1,0 +1,33 @@
+{
+  "mainFlow": "The main browser run completed all assertions through practical exams, deadline recovery, mobile layouts and written 60-question submission. Its final same-URL navigation did not reload the written selector; the navigation helper was corrected.",
+  "theoryModes": [
+    "written",
+    "practical"
+  ],
+  "mockModes": [
+    "written",
+    "practical"
+  ],
+  "writtenFormats": [
+    60,
+    80
+  ],
+  "practicalFormats": [
+    8,
+    12
+  ],
+  "savedDeadlineAndAnswers": true,
+  "manualSubmission": true,
+  "timeoutDuringExam": true,
+  "expiredOnReload": true,
+  "selfCheckAndReviewPersistence": true,
+  "oldLearningRecordsPreserved": true,
+  "mobileWidths": [
+    390,
+    320
+  ],
+  "remainingFlow": "Targeted browser verification confirmed official80 selection/submission, 25-unit plus 12-question printing, hidden navigation in print media and the written PART return link.",
+  "printPreserved": true,
+  "errors": [],
+  "failed": []
+}
