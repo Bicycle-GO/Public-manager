@@ -1,3 +1,5 @@
+import { practicalExpectedBank, practicalSourceCounts } from './practical-bank.js';
+
 const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 export function renderCourseTabs(section, selected) {
@@ -18,7 +20,7 @@ export function renderMockHub(writtenCount = 0, practicalCount = 0, active = nul
 }
 
 export function renderPracticeHub(writtenCount=452, writtenAnswered=0, practicalCompleted=0) {
-  return `<div class="page-heading"><div><div class="eyebrow">EXPECTED QUESTIONS · WRITTEN & PRACTICAL</div><h1>예상문제</h1><p>필기는 객관식 개념 확인, 실기는 사례·계산·서술 답안 작성으로 연습하세요.</p></div></div><div class="course-choices">${card({mode:'written',title:'필기 예상문제',subtitle:'객관식 · CHAPTER별 풀이',count:`3개 PART · ${writtenCount}문항`,details:['PART·CHAPTER별 문제와 상세 해설','풀이 상태별 복습·오답노트·북마크','기존 풀이 기록과 연결'],href:'#practice/written',action:'필기 문제 풀기',progress:`최근 답안 기록 ${writtenAnswered}문항`})}${card({mode:'practical',title:'실기 예상문제',subtitle:'사례 · 계산 · 답안 연습',count:'7개 PART · 55문제',details:['새 기본이론 주제별 사례 18개','기존 출제기준 사례 25개·캡처 문제 12개','나의 답안 자동 저장·모범답안·상세 풀이·자가점검'],href:'#practice/practical',action:'실기 문제·답안 연습하기',progress:`실기 문제 학습 완료 ${practicalCompleted}/55`})}</div><section class="course-bridge"><h2>개념이 헷갈리면 기본이론으로 돌아가세요</h2><p>각 실기 문제에서 관련 PART의 기본이론으로 이동할 수 있습니다. 시간 제한 연습은 필기·실기 모의고사에서 진행합니다.</p><a href="#theory">필기·실기 기본이론 보기 →</a></section>`;
+  return `<div class="page-heading"><div><div class="eyebrow">EXPECTED QUESTIONS · WRITTEN & PRACTICAL</div><h1>예상문제</h1><p>필기는 객관식 개념 확인, 실기는 사례·계산·서술 답안 작성으로 연습하세요.</p></div></div><div class="course-choices">${card({mode:'written',title:'필기 예상문제',subtitle:'객관식 · CHAPTER별 풀이',count:`3개 PART · ${writtenCount}문항`,details:['PART·CHAPTER별 문제와 상세 해설','풀이 상태별 복습·오답노트·북마크','기존 풀이 기록과 연결'],href:'#practice/written',action:'필기 문제 풀기',progress:`최근 답안 기록 ${writtenAnswered}문항`})}${card({mode:'practical',title:'실기 예상문제',subtitle:'사례 · 계산 · 답안 연습',count:`7개 PART · ${practicalExpectedBank.length}문제`,details:[`단원 핵심문제 검토본 ${practicalSourceCounts.review}개`,`주제별 사례 ${practicalSourceCounts.course}개 · 핵심 응용문제 ${practicalSourceCounts.core}개`,`출제기준 사례 ${practicalSourceCounts.unit}개 · 캡처 문제 ${practicalSourceCounts.capture}개`,'나의 답안 자동 저장·모범답안·상세 풀이·자가점검'],href:'#practice/practical',action:'실기 문제·답안 연습하기',progress:`실기 문제 학습 완료 ${practicalCompleted}/${practicalExpectedBank.length}`})}</div><section class="course-bridge"><h2>개념이 헷갈리면 기본이론으로 돌아가세요</h2><p>각 실기 문제에서 관련 PART의 기본이론으로 이동할 수 있습니다. 시간 제한 연습은 필기·실기 모의고사에서 진행합니다.</p><a href="#theory">필기·실기 기본이론 보기 →</a></section>`;
 }
 
 // Preserve old record IDs while consolidating every answer-writing route under practice.

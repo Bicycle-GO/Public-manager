@@ -4,6 +4,8 @@ import { practicalParts, practicalChapters, courseSources, chapterForUnit, chapt
 import { practicalUnits } from '../practical-data.js';
 import { workbookQuestions } from '../practical-workbook.js';
 import { practicalExpectedBank, renderPracticalQuestions } from '../practical-question-ui.js';
+import { coreQuestions } from '../practical-core-questions.js';
+import { reviewedQuestions } from '../practical-capture-review.js';
 import { renderPracticalCourse } from '../practical-course-ui.js';
 import { resolveCourseRoute, renderPracticeHub, renderCourseTabs } from '../learning-hubs.js';
 
@@ -30,9 +32,9 @@ test('Requested practical curriculum contains seven PARTs and eighteen substanti
 test('Crosswalk preserves all original twenty-five criteria and twelve capture questions without duplicating bank IDs',()=>{
   for(const unit of practicalUnits){const ch=chapterForUnit(unit.id);assert.ok(ch&&ch.units.includes(unit.id),unit.id);}
   for(const q of workbookQuestions){const ch=chapterForCapture(q.id);assert.ok(ch&&ch.captures.includes(q.id),q.id);}
-  assert.equal(practicalExpectedBank.length,55);
-  assert.equal(new Set(practicalExpectedBank.map(q=>q.source+':'+q.id)).size,55);
-  assert.deepEqual(practicalExpectedBank.reduce((r,q)=>(r[q.source]=(r[q.source]||0)+1,r),{}),{course:18,unit:25,capture:12});
+  assert.equal(practicalExpectedBank.length,55+coreQuestions.length+reviewedQuestions.length);
+  assert.equal(new Set(practicalExpectedBank.map(q=>q.source+':'+q.id)).size,55+coreQuestions.length+reviewedQuestions.length);
+  assert.deepEqual(practicalExpectedBank.filter(q=>!['core','review'].includes(q.source)).reduce((r,q)=>(r[q.source]=(r[q.source]||0)+1,r),{}),{course:18,unit:25,capture:12});
   assert.equal(chapterForUnit('p5-2').part,5);
   const crosswalk=renderPracticalCourse({segment:'criteria'});
   for(const unit of practicalUnits)assert.ok(crosswalk.includes('unit/'+unit.id));
@@ -80,7 +82,7 @@ test('Expected questions have written and practical entry points and every old p
   for(const unit of practicalUnits)assert.equal(resolveCourseRoute('#theory/practical/'+unit.areaId+'/'+unit.id).canonical,'#practice/practical/unit/'+unit.id);
   for(const q of workbookQuestions)assert.equal(resolveCourseRoute('#practical/questions/'+q.id).canonical,'#practice/practical/capture/'+q.id);
   const hub=renderPracticeHub(),tabs=renderCourseTabs('practice','practical');
-  assert.ok(hub.includes('필기 예상문제')&&hub.includes('실기 예상문제')&&hub.includes('55문제'));
+  assert.ok(hub.includes('필기 예상문제')&&hub.includes('실기 예상문제')&&hub.includes(`${practicalExpectedBank.length}문제`));
   assert.ok(tabs.includes('실기 예상문제')&&tabs.includes('href="#practice/practical" aria-current="page"'));
 });
 

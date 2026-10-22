@@ -1,7 +1,9 @@
 import { renderTheoryHub, renderMockHub, renderPracticeHub, renderCourseTabs, resolveCourseRoute } from './learning-hubs.js';
 import { normalizePracticalCourse, normalizeCoursePractice, findPracticalChapter } from './practical-course.js';
+import { findCoreQuestion, normalizeCorePractice } from './practical-core-questions.js';
+import { findReviewedQuestion, normalizeReviewedPractice } from './practical-capture-review.js';
 import { renderPracticalCourse } from './practical-course-ui.js';
-import { renderPracticalQuestions, filterPracticalQuestions } from './practical-question-ui.js';
+import { renderPracticalQuestions, filterPracticalQuestions, practicalExpectedBank } from './practical-question-ui.js';
 import { practicalMockFormats, createPracticalAttempt, normalizePracticalExams, practicalTimeRemaining, answeredPracticalCount, submitPracticalAttempt, practicalExamQuestion } from './practical-mock.js';
 import { renderPracticalMock, practicalReviewSummary, formatRemaining } from './practical-mock-ui.js';
 import { normalizeWorkbookState, findWorkbookQuestion } from './practical-workbook.js';
@@ -64,6 +66,8 @@ state.practicalWorkbook = normalizeWorkbookState(state.practicalWorkbook);
 state.practicalExams = normalizePracticalExams(state.practicalExams);
 state.practicalCourse = normalizePracticalCourse(state.practicalCourse);
 state.practicalCoursePractice = normalizeCoursePractice(state.practicalCoursePractice);
+state.practicalCorePractice = normalizeCorePractice(state.practicalCorePractice);
+state.practicalCaptureReview = normalizeReviewedPractice(state.practicalCaptureReview);
 let page = 'dashboard', filter = 0, query = '', quiz = null, selected = null, revealed = false;
 let examInterval;
 let mockFormat = 'practice60';
@@ -169,8 +173,8 @@ function lessonList() {
  return subjects.filter(s=>filtered.some(l=>l.subject===s.id)).map(s=>`<section class="section lesson-group"><div class="section-title"><h2><span class="subject-icon ${s.color}">${icon(s.icon)}</span> 제${s.id}과목. ${s.title}</h2><span>${filtered.filter(l=>l.subject===s.id).length}개 단원</span></div><div class="card">${filtered.filter(l=>l.subject===s.id).map(l=>`<div class="lesson-row"><span class="lesson-number ${state.completed.includes(l.id)?'complete':''}">${state.completed.includes(l.id)?icon('check'):chapterLabel(l.chapter)}</span><button class="lesson-title" data-action="lesson" data-id="${l.id}"><h3>${l.title}</h3><p>${l.summary}</p></button><span class="duration">${icon('clock')} ${l.minutes}분</span><button class="icon-button ${state.bookmarks.includes('l'+l.id)?'bookmarked':''}" data-action="bookmark-lesson" data-id="${l.id}" aria-label="${esc(l.title)} 북마크" aria-pressed="${state.bookmarks.includes('l'+l.id)}">${icon('bookmark')}</button><button class="soft-button" data-action="lesson" data-id="${l.id}">${state.completed.includes(l.id)?'다시 읽기':'학습하기'} ${icon('chevron')}</button></div>`).join('')}</div></section>`).join('');
 }
 function practice() {
- if(practiceMode==='hub') return renderPracticeHub(questions.length,answerCount(),state.practical.completed.length+state.practicalWorkbook.completed.length+state.practicalCoursePractice.completed.length);
- if(practiceMode==='practical') return renderCourseTabs('practice','practical') + renderPracticalQuestions({...practicalQuestionRoute,practical:state.practical,workbook:state.practicalWorkbook,coursePractice:state.practicalCoursePractice});
+ if(practiceMode==='hub') return renderPracticeHub(questions.length,answerCount(),state.practical.completed.length+state.practicalWorkbook.completed.length+state.practicalCoursePractice.completed.length+state.practicalCorePractice.completed.length+state.practicalCaptureReview.completed.length);
+ if(practiceMode==='practical') return renderCourseTabs('practice','practical') + renderPracticalQuestions({...practicalQuestionRoute,practical:state.practical,workbook:state.practicalWorkbook,coursePractice:state.practicalCoursePractice,corePractice:state.practicalCorePractice,reviewPractice:state.practicalCaptureReview});
  return renderCourseTabs('practice','written')+writtenPractice();
 }
 function writtenPractice() {
@@ -214,7 +218,7 @@ function writtenMock() {
  </section><section class="card exam-history"><h2>${icon('chart')} 최근 응시 기록</h2>${state.exams.length ? state.exams.slice(-5).reverse().map(e=>`<div class="history-row"><div><strong>${new Date(e.date).toLocaleDateString('ko-KR')}</strong><small>${mockFormats[e.format]?.label || e.total+'문항 모의고사'} · ${e.correct} / ${e.total} 정답</small></div><b>${e.average!==undefined?e.average.toFixed(1):Math.round(e.correct/e.total*100)}<small>점</small></b></div>`).join('') : `<div class="history-empty">${icon('file')}<p>아직 응시 기록이 없어요.<br>첫 모의고사에 도전해 보세요.</p></div>`}</section></div>`;
 }
 function info() {
- return `${head('YOUR EXAM GUIDE','시험 안내 · 학습 자료','공식 정보로 준비하고, 검증된 자료로 학습의 깊이를 더하세요.')}<section class="card info-intro"><span class="exam-badge">국가기술자격</span><h2>공공조달관리사</h2><p>공공조달 전 과정에 대한 전문지식과 실무능력을 검증하는 자격입니다. 원서접수, 시험 일정, 출제기준은 큐넷에서 최신 공고를 확인하세요.</p>${external(sources.exam,'정부 공식 시험 안내')}${external(sources.qnet,'큐넷 바로가기')}</section><div class="info-grid"><section class="card info-box"><h2>${icon('book')} 필기 학습 과목</h2>${subjects.map(s=>`<p><span class="subject-label">제${s.id}과목</span> ${s.title}</p>`).join('')}<p class="muted">실기 과목: 공공조달 관리실무 · 필답형 2시간 30분</p><p><a href="#practical">제2편 실기 · 7개 PART·18개 주제 학습하기 →</a></p>${external(sources.subjects,'국가기술자격법 시행규칙 · 시험과목')}</section><section class="card info-box"><h2>${icon('building')} 공식 자료실</h2>${external(sources.pps,'공공조달역량개발원 · 표준교재')}${external(sources.law,'국가계약법 · 국가법령정보센터')}${external(sources.local,'지방계약법 · 국가법령정보센터')}${external(sources.qnet,'큐넷 · 시험 공고 및 출제기준')}</section></div><section class="card info-box"><h2>이 학습 공간의 콘텐츠 안내</h2><a href="#materials">필기 핵심 학습자료 · 14일 계획 보기 →</a><p>제1편 공공조달관리사 필기를 3개 PART·${lessons.length}개 CHAPTER로 구성하고 심화 정리·비교표·계산 예제를 더해 학습용 연습문제 ${questions.length}개로 구성한 학습 공간입니다. 공식 기출문제나 전체 출제범위를 대체하는 교재가 아니며, 합격을 보장하지 않습니다. 과목 구성은 공식 법령 자료를 참고했고, 이론과 해설은 기본 개념을 학습하기 위해 자체 작성했습니다.</p><p>법령상 금액, 기한과 세부 예외는 개정될 수 있어 이 콘텐츠에서는 구체적 수치 암기보다 개념 이해를 중심으로 다룹니다. 응시 전 최신 법령, 큐넷 출제기준과 표준교재를 함께 확인해 주세요. 웹 학습자료 업데이트: 2026. 10. 21. 실기 기본이론은 요청 목차의 7개 PART·18개 주제로 구성하고 첨부 출제기준의 8개 주요항목·25개 세부항목을 대응표로 연결했습니다. 예상문제의 실기는 주제별 18개·출제기준 25개·캡처 12개 등 55문제의 답안 연습·해설·자가점검·인쇄를 지원합니다. 추가 자료의 반영 범위는 학습자료 페이지에서 확인할 수 있습니다.</p><p>학습 진도, 최근 답안, 북마크와 모의고사 기록은 이 브라우저에만 저장됩니다. 다른 기기와 동기화되지 않으며 브라우저 데이터 삭제 시 지워집니다.</p><button class="soft-button" data-action="export">${icon('file')} 학습 기록 내보내기</button></section>`;
+ return `${head('YOUR EXAM GUIDE','시험 안내 · 학습 자료','공식 정보로 준비하고, 검증된 자료로 학습의 깊이를 더하세요.')}<section class="card info-intro"><span class="exam-badge">국가기술자격</span><h2>공공조달관리사</h2><p>공공조달 전 과정에 대한 전문지식과 실무능력을 검증하는 자격입니다. 원서접수, 시험 일정, 출제기준은 큐넷에서 최신 공고를 확인하세요.</p>${external(sources.exam,'정부 공식 시험 안내')}${external(sources.qnet,'큐넷 바로가기')}</section><div class="info-grid"><section class="card info-box"><h2>${icon('book')} 필기 학습 과목</h2>${subjects.map(s=>`<p><span class="subject-label">제${s.id}과목</span> ${s.title}</p>`).join('')}<p class="muted">실기 과목: 공공조달 관리실무 · 필답형 2시간 30분</p><p><a href="#practical">제2편 실기 · 7개 PART·18개 주제 학습하기 →</a></p>${external(sources.subjects,'국가기술자격법 시행규칙 · 시험과목')}</section><section class="card info-box"><h2>${icon('building')} 공식 자료실</h2>${external(sources.pps,'공공조달역량개발원 · 표준교재')}${external(sources.law,'국가계약법 · 국가법령정보센터')}${external(sources.local,'지방계약법 · 국가법령정보센터')}${external(sources.qnet,'큐넷 · 시험 공고 및 출제기준')}</section></div><section class="card info-box"><h2>이 학습 공간의 콘텐츠 안내</h2><a href="#materials">필기 핵심 학습자료 · 14일 계획 보기 →</a><p>제1편 공공조달관리사 필기를 3개 PART·${lessons.length}개 CHAPTER로 구성하고 심화 정리·비교표·계산 예제를 더해 학습용 연습문제 ${questions.length}개로 구성한 학습 공간입니다. 공식 기출문제나 전체 출제범위를 대체하는 교재가 아니며, 합격을 보장하지 않습니다. 과목 구성은 공식 법령 자료를 참고했고, 이론과 해설은 기본 개념을 학습하기 위해 자체 작성했습니다.</p><p>법령상 금액, 기한과 세부 예외는 개정될 수 있어 이 콘텐츠에서는 구체적 수치 암기보다 개념 이해를 중심으로 다룹니다. 응시 전 최신 법령, 큐넷 출제기준과 표준교재를 함께 확인해 주세요. 웹 학습자료 업데이트: 2026. 10. 23. 실기 기본이론은 요청 목차의 7개 PART·18개 주제로 구성하고 첨부 출제기준의 8개 주요항목·25개 세부항목을 대응표로 연결했습니다. 예상문제의 실기는 주제별 18개·출제기준 25개·캡처 12개·핵심 응용 12개·단원 핵심문제 검토본 11개 등 ${practicalExpectedBank.length}문제의 답안 연습·해설·자가점검·인쇄를 지원합니다. 핵심 응용문제와 이론 보강은 앞서 제공한 전자책 캡처의 조달데이터·수요예측/STP·원가계산 주제를 활용했습니다. 추가로 제공된 5장 캡처의 등록·인증·목록화 핵심문제 11개를 공식 자료와 대조하여 PART 1 이론과 연결했습니다. 목록화 03은 확인된 일부 화면과 공식 보충 설명을 구분했습니다.</p><p>학습 진도, 최근 답안, 북마크와 모의고사 기록은 이 브라우저에만 저장됩니다. 다른 기기와 동기화되지 않으며 브라우저 데이터 삭제 시 지워집니다.</p><button class="soft-button" data-action="export">${icon('file')} 학습 기록 내보내기</button></section>`;
 }
 function openLessonModal(id) {
  const l = lessons.find(l=>l.id===id); if (!l) return;
@@ -440,12 +444,14 @@ document.addEventListener('click', event => {
 
 document.addEventListener('input',event=>{
  if(event.target.hasAttribute('data-pq-filter')){filterPracticalQuestions();return;}
- const chapter=findPracticalChapter(event.target.dataset.pqDraft);
+ const core=event.target.dataset.pqSource==='core',review=event.target.dataset.pqSource==='review';
+ const chapter=review?findReviewedQuestion(event.target.dataset.pqDraft):core?findCoreQuestion(event.target.dataset.pqDraft):findPracticalChapter(event.target.dataset.pqDraft);
  if(!chapter)return;
  const id=chapter.id;
- state.practicalCoursePractice.drafts[id]=event.target.value;
- state.practicalCoursePractice.checks[id]=[];
- state.practicalCoursePractice.completed=state.practicalCoursePractice.completed.filter(value=>value!==id);
+ const record=review?state.practicalCaptureReview:core?state.practicalCorePractice:state.practicalCoursePractice;
+ record.drafts[id]=event.target.value;
+ record.checks[id]=[];
+ record.completed=record.completed.filter(value=>value!==id);
  document.querySelectorAll('[data-pq-check]').forEach(input=>{input.checked=false;});
  document.querySelector('#pq-check-status').textContent=`자가점검 0/${chapter.checks.length} 충족 · 답안을 수정하여 다시 확인해 주세요.`;
  const completeButton=document.querySelector('[data-pq-complete]');
@@ -455,19 +461,21 @@ document.addEventListener('input',event=>{
 });
 document.addEventListener('change',event=>{
  if(event.target.hasAttribute('data-pq-filter')){filterPracticalQuestions();return;}
- const chapter=findPracticalChapter(event.target.dataset.pqCheck);
+ const core=event.target.dataset.pqSource==='core',review=event.target.dataset.pqSource==='review';
+ const chapter=review?findReviewedQuestion(event.target.dataset.pqCheck):core?findCoreQuestion(event.target.dataset.pqCheck):findPracticalChapter(event.target.dataset.pqCheck);
  if(!chapter)return;
  const values=[...document.querySelectorAll('[data-pq-check]:checked')].map(input=>Number(input.value));
- state.practicalCoursePractice.checks[chapter.id]=values;
+ (review?state.practicalCaptureReview:core?state.practicalCorePractice:state.practicalCoursePractice).checks[chapter.id]=values;
  const saved=save();
  document.querySelector('#pq-check-status').textContent=`자가점검 ${values.length}/${chapter.checks.length} 충족${saved?' · 저장됨':' · 저장 실패'}`;
 });
 document.addEventListener('click',event=>{
  const button=event.target.closest('[data-pc-complete],[data-pq-complete]');
  if(!button)return;
- const theory=button.hasAttribute('data-pc-complete'),chapter=findPracticalChapter(theory?button.dataset.pcComplete:button.dataset.pqComplete);
+ const theory=button.hasAttribute('data-pc-complete'),core=!theory&&button.dataset.pqSource==='core',review=!theory&&button.dataset.pqSource==='review';
+ const chapter=review?findReviewedQuestion(button.dataset.pqComplete):core?findCoreQuestion(button.dataset.pqComplete):findPracticalChapter(theory?button.dataset.pcComplete:button.dataset.pqComplete);
  if(!chapter)return;
- const record=theory?state.practicalCourse:state.practicalCoursePractice,done=record.completed.includes(chapter.id);
+ const record=theory?state.practicalCourse:review?state.practicalCaptureReview:core?state.practicalCorePractice:state.practicalCoursePractice,done=record.completed.includes(chapter.id);
  record.completed=done?record.completed.filter(id=>id!==chapter.id):[...record.completed,chapter.id];
  if(!done)touch();
  const saved=save();render();

@@ -1,26 +1,27 @@
 import { practicalChapters, practicalParts, practicalChapterUrl, practicalQuestionUrl, findPracticalChapter, chapterForUnit, chapterForCapture, normalizeCoursePractice } from './practical-course.js';
 import { courseEsc as esc, courseList, courseReferences } from './practical-course-ui.js';
 import { practicalUnits, normalizePracticalState } from './practical-data.js';
-import { workbookQuestions, normalizeWorkbookState } from './practical-workbook.js';
+import { normalizeWorkbookState } from './practical-workbook.js';
 import { renderWorkbook, renderWorkbookPrint, renderWorkbookLinks } from './practical-workbook-ui.js';
 import { teaching, exercise } from './practical-ui.js';
+import { practicalExpectedBank, practicalSourceLabels, practicalSourceCounts, practicalBankSummary } from './practical-bank.js';
+import { findCoreQuestion, normalizeCorePractice } from './practical-core-questions.js';
+import { findReviewedQuestion, normalizeReviewedPractice } from './practical-capture-review.js';
+import { renderCoreQuestion, renderCoreQuestionPrint } from './practical-core-ui.js';
+export { practicalExpectedBank } from './practical-bank.js';
 
-export const practicalExpectedBank = [
-  ...practicalChapters.map(ch=>({source:'course',id:ch.id,part:ch.part,title:ch.title,chapter:ch,kind:'주제별 사례'})),
-  ...practicalUnits.map(unit=>({source:'unit',id:unit.id,part:chapterForUnit(unit.id).part,title:unit.title,chapter:chapterForUnit(unit.id),kind:'출제기준 사례'})),
-  ...workbookQuestions.map(q=>({source:'capture',id:q.id,part:chapterForCapture(q.id).part,title:q.title,chapter:chapterForCapture(q.id),kind:q.kind}))
-].sort((a,b)=>a.part-b.part);
-const sourceNames={course:'주제별 사례 18',unit:'출제기준 사례 25',capture:'캡처 문제 12'};
+const sourceNames=Object.fromEntries(Object.entries(practicalSourceLabels).map(([key,label])=>[key,`${label} ${practicalSourceCounts[key]}`]));
 const heading=(title,description)=>`<div class="page-heading"><div><div class="eyebrow">EXPECTED QUESTIONS · PRACTICAL</div><h1>${esc(title)}</h1><p>${esc(description)}</p></div><a class="soft-button" href="#practice/practical/print">실기 문제 전체 · 인쇄</a></div>`;
 const breadcrumb=chapter=>`<nav class="pr-breadcrumb" aria-label="실기 예상문제 경로"><a href="#practice">예상문제</a><span>/</span><a href="#practice/practical">실기 전체 문제</a><span>/</span><a href="${practicalChapterUrl(chapter)}">PART ${chapter.part} · 관련 기본이론 →</a></nav>`;
-const storeFor=(q,state)=>q.source==='course'?state.practicalCoursePractice:q.source==='unit'?state.practical:state.practicalWorkbook;
+const storeFor=(q,state)=>q.source==='review'?state.practicalCaptureReview:q.source==='core'?state.practicalCorePractice:q.source==='course'?state.practicalCoursePractice:q.source==='unit'?state.practical:state.practicalWorkbook;
 
 function directory(state) {
+  const total=practicalExpectedBank.length;
   const completed=practicalExpectedBank.filter(q=>storeFor(q,state).completed.includes(q.id)).length,written=practicalExpectedBank.filter(q=>storeFor(q,state).drafts[q.id]?.trim()).length;
-  return `${heading('실기 예상문제','7개 PART의 사례와 기존 출제기준·캡처 문제를 한곳에서 풀고 답안 작성까지 연습하세요.')}<section class="pq-intro"><div><span class="pr-pill">필답형 · 계산 · 서술 · 단답 연습</span><h2>먼저 써 보고, 이유를 이해하세요.</h2><p>조건 확인 → 나의 답안 작성 → 모범답안·풀이 비교 → 자가점검<br>입력한 답안은 이 브라우저에 자동 저장됩니다.</p></div><div><strong>55<span>문제</span></strong><p>주제별 18 + 출제기준 25 + 캡처 12</p><small>답안 작성 ${written}/55 · 완료 ${completed}/55</small></div></section><div class="pq-toolbar"><label>PART<select data-pq-filter="part"><option value="all">전체 7개 PART</option>${practicalParts.map(p=>`<option value="${p.id}">PART ${p.id} · ${esc(p.title)}</option>`).join('')}</select></label><label>문제 구성<select data-pq-filter="source"><option value="all">전체 55문제</option>${Object.entries(sourceNames).map(([key,name])=>`<option value="${key}">${name}</option>`).join('')}</select></label><label>학습 상태<select data-pq-filter="status"><option value="all">전체 상태</option><option value="unwritten">아직 미작성</option><option value="written">답안 작성함</option><option value="completed">학습 완료</option></select></label><label>문제 검색<input type="search" data-pq-filter="search" placeholder="예: 공동계약, 원가계산"></label></div><div class="pq-results"><p role="status" id="pq-visible-count">55문제 표시</p><a href="#theory/practical">실기 기본이론 목차 →</a></div><div class="pq-grid">${practicalExpectedBank.map(q=>{
+  return `${heading('실기 예상문제','7개 PART의 사례와 기존 출제기준·캡처 문제를 한곳에서 풀고 답안 작성까지 연습하세요.')}<section class="pq-intro"><div><span class="pr-pill">필답형 · 계산 · 서술 · 단답 연습</span><h2>먼저 써 보고, 이유를 이해하세요.</h2><p>조건 확인 → 나의 답안 작성 → 모범답안·풀이 비교 → 자가점검<br>입력한 답안은 이 브라우저에 자동 저장됩니다.</p></div><div><strong>${total}<span>문제</span></strong><p>${esc(practicalBankSummary)}</p><small>답안 작성 ${written}/${total} · 완료 ${completed}/${total}</small></div></section><aside class="pc-scope"><strong>5장 캡처 검토 · PART 1 단원 핵심문제 ${practicalSourceCounts.review}개</strong><p>나라장터 등록·인증 8문제와 물품목록화 3문제를 정리했습니다. 아래 ‘문제 구성’에서 ‘단원 핵심문제 · 검토본’을 선택하세요. 원문과 공식 안내를 대조한 수정 이유, 쉬운 개념 설명, 답안 작성 틀과 단계별 풀이를 제공합니다. 목록화 03의 잘린 부분은 공식 자료로 보충했습니다.</p><p>앞서 제공한 시장분석·수요예측/STP·원가계산 주제의 핵심 응용문제 ${practicalSourceCounts.core}개도 계속 학습할 수 있습니다.</p></aside><div class="pq-toolbar"><label>PART<select data-pq-filter="part"><option value="all">전체 7개 PART</option>${practicalParts.map(p=>`<option value="${p.id}">PART ${p.id} · ${esc(p.title)}</option>`).join('')}</select></label><label>단원<select data-pq-filter="chapter"><option value="all">전체 18개 단원</option>${practicalChapters.map(ch=>`<option value="${ch.id}">PART ${ch.part} · ${esc(ch.title)}</option>`).join('')}</select></label><label>문제 구성<select data-pq-filter="source"><option value="all">전체 ${total}문제</option>${Object.entries(sourceNames).map(([key,name])=>`<option value="${key}">${name}</option>`).join('')}</select></label><label>학습 상태<select data-pq-filter="status"><option value="all">전체 상태</option><option value="unwritten">아직 미작성</option><option value="written">답안 작성함</option><option value="completed">학습 완료</option></select></label><label>문제 검색<input type="search" data-pq-filter="search" placeholder="예: 공동계약, 원가계산"></label></div><div class="pq-results"><p role="status" id="pq-visible-count">${total}문제 표시</p><a href="#theory/practical">실기 기본이론 목차 →</a></div><div class="pq-grid">${practicalExpectedBank.map(q=>{
     const saved=storeFor(q,state),done=saved.completed.includes(q.id),draft=!!saved.drafts[q.id]?.trim();
-    return `<article class="pq-card" data-pq-part="${q.part}" data-pq-source="${q.source}" data-pq-status="${done?'completed':draft?'written':'unwritten'}" data-pq-written="${draft}" data-pq-title="${esc(q.title)}"><div class="pq-card-meta"><span>PART ${q.part} · ${esc(q.kind)}</span><small>${done?'✓ 학습 완료':draft?'작성한 답안 있음':'아직 미작성'}</small></div><h2><a href="${practicalQuestionUrl(q.source,q.id)}">${esc(q.title)}</a></h2><p>${sourceNames[q.source].replace(/ \d+$/,'')} · ${esc(practicalParts[q.part-1].title)}</p><div><a href="${practicalQuestionUrl(q.source,q.id)}">문제·답안 연습 →</a><a href="${practicalChapterUrl(q.chapter)}">기본이론</a></div></article>`;
-  }).join('')}</div><p id="pq-no-results" class="pc-scope" hidden>조건에 맞는 문제가 없습니다. PART·문제 구성·상태·검색어를 바꿔 보세요.</p><aside class="pc-scope"><strong>학습 기록은 그대로 이어집니다</strong><p>기존 출제기준 25개 사례와 캡처 12개 문제의 답안·자가점검·완료 기록은 유지됩니다. 새 주제별 사례 18개와 기본이론 완료 기록은 따로 저장합니다. 문항과 점검표는 자체 학습용이며 공식 기출·채점표가 아닙니다.</p><a href="#mock/practical">실기 모의고사로 시간 연습하기 →</a></aside>`;
+    return `<article class="pq-card" data-pq-part="${q.part}" data-pq-chapter="${q.chapter.id}" data-pq-source="${q.source}" data-pq-status="${done?'completed':draft?'written':'unwritten'}" data-pq-written="${draft}" data-pq-title="${esc(q.title+' '+q.chapter.title)}"><div class="pq-card-meta"><span>PART ${q.part} · ${esc(q.kind)}</span><small>${done?'✓ 학습 완료':draft?'작성한 답안 있음':'아직 미작성'}</small></div><h2><a href="${practicalQuestionUrl(q.source,q.id)}">${esc(q.title)}</a></h2><p>${sourceNames[q.source].replace(/ \d+$/,'')} · ${esc(practicalParts[q.part-1].title)}</p><div><a href="${practicalQuestionUrl(q.source,q.id)}">문제·답안 연습 →</a><a href="${practicalChapterUrl(q.chapter)}">기본이론</a></div></article>`;
+  }).join('')}</div><p id="pq-no-results" class="pc-scope" hidden>조건에 맞는 문제가 없습니다. PART·단원·문제 구성·상태·검색어를 바꿔 보세요.</p><aside class="pc-scope"><strong>학습 기록은 그대로 이어집니다</strong><p>기존 출제기준 25개 사례와 캡처 12개 문제의 답안·자가점검·완료 기록은 유지됩니다. 주제별 사례·핵심 응용문제·단원 핵심문제 검토본·기본이론의 완료 기록은 각각 저장합니다. 문항과 점검표는 자체 학습용이며 공식 기출·채점표가 아닙니다.</p><a href="#mock/practical">실기 모의고사로 시간 연습하기 →</a></aside>`;
 }
 
 function courseQuestion(chapter,state) {
@@ -29,19 +30,23 @@ function courseQuestion(chapter,state) {
 }
 
 function printable(state) {
-  return `${heading('실기 예상문제 전체 학습자료','주제별 사례 18개·출제기준 사례 25개·캡처 문제 12개와 모범답안입니다.')}<div class="pr-print-tools"><button class="button" data-pr-action="print">인쇄 · PDF 저장</button><a href="#practice/practical">실기 문제 목차</a></div>${practicalParts.map(part=>`<section class="pc-print-part"><h2>PART ${part.id}. ${esc(part.title)}</h2>${practicalExpectedBank.filter(q=>q.part===part.id&&q.source!=='capture').map(q=>{
+  return `${heading('실기 예상문제 전체 학습자료',`${practicalBankSummary} · 총 ${practicalExpectedBank.length}문제와 모범답안입니다.`)}<div class="pr-print-tools"><button class="button" data-pr-action="print">인쇄 · PDF 저장</button><a href="#practice/practical">실기 문제 목차</a></div>${practicalParts.map(part=>`<section class="pc-print-part"><h2>PART ${part.id}. ${esc(part.title)}</h2>${practicalExpectedBank.filter(q=>q.part===part.id&&q.source!=='capture').map(q=>{
+    if(q.source==='review')return renderCoreQuestionPrint(findReviewedQuestion(q.id),state.practicalCaptureReview);
+    if(q.source==='core')return renderCoreQuestionPrint(findCoreQuestion(q.id),state.practicalCorePractice);
     const chapter=q.source==='course'?findPracticalChapter(q.id):null,unit=chapter||practicalUnits.find(u=>u.id===q.id),saved=storeFor(q,state);
     return `<article class="pc-reading-card pc-print-chapter"><span>${sourceNames[q.source]}</span><h3>${esc(q.title)}</h3><p>${esc(chapter?chapter.scenario:unit.prompt)}</p>${saved.drafts[q.id]?`<h4>나의 답안</h4><p class="pr-print-draft">${esc(saved.drafts[q.id])}</p>`:''}<h4>모범답안</h4>${courseList(unit.answer)}${chapter?`<h4>작성 이유</h4>${courseList(chapter.reasons)}`:''}<h4>자가점검</h4>${courseList(unit.checks,'ul')}</article>`;
   }).join('')}</section>`).join('')}${renderWorkbookPrint(state.practicalWorkbook,true)}`;
 }
 
-export function renderPracticalQuestions({source='',questionId='',practical={},workbook={},coursePractice={}}={}) {
-  const state={practical:normalizePracticalState(practical),practicalWorkbook:normalizeWorkbookState(workbook),practicalCoursePractice:normalizeCoursePractice(coursePractice)};
+export function renderPracticalQuestions({source='',questionId='',practical={},workbook={},coursePractice={},corePractice={},reviewPractice={}}={}) {
+  const state={practical:normalizePracticalState(practical),practicalWorkbook:normalizeWorkbookState(workbook),practicalCoursePractice:normalizeCoursePractice(coursePractice),practicalCorePractice:normalizeCorePractice(corePractice),practicalCaptureReview:normalizeReviewedPractice(reviewPractice)};
   let html;
   if(source==='print') html=printable(state);
+  else if(source==='review'&&findReviewedQuestion(questionId)) html=renderCoreQuestion(findReviewedQuestion(questionId),state.practicalCaptureReview);
+  else if(source==='core'&&findCoreQuestion(questionId)) html=renderCoreQuestion(findCoreQuestion(questionId),state.practicalCorePractice);
   else if(source==='capture') {
     const chapter=chapterForCapture(questionId);
-    html=`${chapter?breadcrumb(chapter):'<a class="pc-back" href="#practice/practical">← 실기 예상문제 전체 55문제</a>'}${renderWorkbook(questionId,state.practicalWorkbook)}`;
+    html=`${chapter?breadcrumb(chapter):'<a class="pc-back" href="#practice/practical">← 실기 예상문제 전체</a>'}${renderWorkbook(questionId,state.practicalWorkbook)}`;
   } else if(source==='course'&&findPracticalChapter(questionId)) html=courseQuestion(findPracticalChapter(questionId),state.practicalCoursePractice);
   else if(source==='unit'&&practicalUnits.some(u=>u.id===questionId)) {
     const unit=practicalUnits.find(u=>u.id===questionId),chapter=chapterForUnit(questionId);
@@ -52,10 +57,10 @@ export function renderPracticalQuestions({source='',questionId='',practical={},w
 
 export function filterPracticalQuestions(root=document) {
   const value=key=>root.querySelector(`[data-pq-filter="${key}"]`)?.value||'all';
-  const part=value('part'),source=value('source'),status=value('status'),search=(root.querySelector('[data-pq-filter="search"]')?.value||'').trim().toLocaleLowerCase();
+  const part=value('part'),chapter=value('chapter'),source=value('source'),status=value('status'),search=(root.querySelector('[data-pq-filter="search"]')?.value||'').trim().toLocaleLowerCase();
   let count=0;
   root.querySelectorAll('.pq-card').forEach(card=>{
-    const matches=(part==='all'||card.dataset.pqPart===part)&&(source==='all'||card.dataset.pqSource===source)&&(status==='all'||(status==='written'?card.dataset.pqWritten==='true':status==='unwritten'?card.dataset.pqWritten!=='true':card.dataset.pqStatus===status))&&card.dataset.pqTitle.toLocaleLowerCase().includes(search);
+    const matches=(part==='all'||card.dataset.pqPart===part)&&(chapter==='all'||card.dataset.pqChapter===chapter)&&(source==='all'||card.dataset.pqSource===source)&&(status==='all'||(status==='written'?card.dataset.pqWritten==='true':status==='unwritten'?card.dataset.pqWritten!=='true':card.dataset.pqStatus===status))&&card.dataset.pqTitle.toLocaleLowerCase().includes(search);
     card.hidden=!matches;if(matches)count++;
   });
   const countNode=root.querySelector('#pq-visible-count');if(countNode)countNode.textContent=`${count}문제 표시`;

@@ -1,5 +1,7 @@
 import { practicalParts, practicalChapters, courseSources, findPracticalChapter, practicalChapterUrl, practicalQuestionUrl, normalizePracticalCourse } from './practical-course.js';
 import { practicalAreas, practicalEdition } from './practical-data.js';
+import { findPracticalCoreLearning } from './practical-core-learning.js';
+import { captureReviewLearning } from './practical-registration-learning.js';
 
 export const courseEsc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const esc = courseEsc;
@@ -27,8 +29,34 @@ export function renderCourseCase(chapter, expanded=false) {
   return `<details class="pc-case" ${expanded?'open':''}><summary>사례로 이해하기 · 문제와 단계별 해설</summary><div><p class="pc-scenario">${esc(chapter.scenario)}</p>${chapter.answer.map((answer,i)=>`<section><h4>${num(i+1)} · 답안의 핵심</h4><p>${esc(answer)}</p><p class="pc-reason"><strong>왜 이렇게 쓰나요?</strong> ${esc(chapter.reasons[i])}</p></section>`).join('')}<a href="${practicalQuestionUrl('course',chapter.id)}">이 사례에 직접 답안 작성하기 →</a></div></details>`;
 }
 
+export function renderCoreLearning(chapter, printable=false) {
+  const core=captureReviewLearning[chapter.id]||findPracticalCoreLearning(chapter.id);
+  if(!core)return '';
+  return `<section class="pc-section pc-core-learning" aria-label="캡처 주제 보충 학습">
+    <h3>보충 학습 · ${esc(core.title)}</h3>
+    <aside class="pc-scope"><strong>${esc(core.provenance)}</strong><p>${esc(core.scope)}</p><small>${esc(core.scopeNote||'이 보충자료는 앞서 받은 시장분석·수요예측·원가계산 캡처 범위를 다룹니다. 전자책 전체 내용을 확인·요약한 자료는 아닙니다.')} 보충 설명 정리: 2026. 10. 23.</small></aside>
+    <section class="pc-explanation"><h4>이 내용을 익히면 할 수 있는 일</h4>${courseList(core.objectives,'ul')}</section>
+    ${core.notes.map(note=>`<section class="pc-explanation"><h4>${esc(note.title)}</h4><p>${esc(note.text)}</p></section>`).join('')}
+    ${core.comparisons.map(group=>`<section class="pc-explanation"><h4>${esc(group.title)}</h4><dl class="pc-terms">${group.items.map(([title,text])=>`<div><dt>${esc(title)}</dt><dd>${esc(text)}</dd></div>`).join('')}</dl></section>`).join('')}
+    ${core.examples.map(example=>`<details class="pc-case" ${printable?'open':''}><summary>${esc(example.title)} · 단계별 풀이</summary><div><p class="pc-scenario">${esc(example.condition)}</p>${example.steps.map(([title,text],i)=>`<section><h4>${num(i+1)} · ${esc(title)}</h4><p>${esc(text)}</p></section>`).join('')}<p class="pc-reason"><strong>답안으로 연결하기</strong>${esc(example.conclusion)}</p></div></details>`).join('')}
+    <section class="pc-documents"><h4>내 답안에 적용할 작성 틀</h4>${courseList(core.answerFrame,'ul')}</section>
+    <section class="pc-explanation"><h4>스스로 설명한 뒤 확인하세요</h4>${core.selfExplain.map(([question,answer])=>`<details class="pc-case" ${printable?'open':''}><summary>${esc(question)}</summary><div><p>${esc(answer)}</p></div></details>`).join('')}</section>
+    ${core.refs?`<section class="pc-explanation"><h4>검토에 사용한 공식 자료 · 2026. 10. 23.</h4><ul>${core.refs.map(ref=>`<li><a href="${esc(ref.url)}" target="_blank" rel="noopener noreferrer">${esc(ref.title)} ↗</a></li>`).join('')}</ul></section>`:''}
+    ${printable?'':`<nav aria-label="이 단원의 핵심문제"><h4>예상문제에서 직접 써 보기</h4><p>개념을 이해했다면 핵심문제의 조건을 읽고 답안을 작성한 뒤 해설과 비교하세요.</p><ul>${core.questions.map((id,i)=>`<li><a class="pc-back" href="${practicalQuestionUrl(core.questionSource||'core',id)}">단원 핵심문제 ${num(i+1)} · 문제·답안 연습 →</a></li>`).join('')}</ul></nav>`}
+  </section>`;
+}
+
 export function renderCourseBody(chapter, printable=false) {
-  return `<p class="pc-intro">${esc(chapter.intro)}</p><section class="pc-section"><h3>01 · 먼저 익힐 용어</h3><dl class="pc-terms">${chapter.terms.map(([title,text])=>`<div><dt>${esc(title)}</dt><dd>${esc(text)}</dd></div>`).join('')}</dl></section><section class="pc-section"><h3>02 · 개념을 쉽게 이해하기</h3>${chapter.sections.map(([title,text],i)=>`<section class="pc-explanation"><h4><span>${i+1}</span> ${esc(title)}</h4><p>${esc(text)}</p></section>`).join('')}</section><section class="pc-section"><h3>03 · 업무 처리 순서</h3>${courseList(chapter.steps)}</section><section class="pc-section pc-documents"><h3>04 · 작성·확인할 서류</h3>${courseList(chapter.documents,'ul')}</section>${renderCourseCase(chapter,printable)}<section class="pc-section pc-traps"><h3>05 · 헷갈리지 않도록 확인하기</h3>${courseList(chapter.pitfalls,'ul')}</section><section class="pc-section"><h3>06 · 내 말로 설명할 수 있나요?</h3>${courseList(chapter.checks,'ul')}<p class="pr-help">세 문장을 답안의 점검 기준으로 활용하세요. 직접 작성·체크하는 기능은 예상문제 → 실기에 있습니다.</p></section><section class="pc-section"><h3>공식 자료와 적용 근거</h3>${courseReferences(chapter)}<p class="pr-help">본문은 개념 학습을 위한 설명입니다. 세부 수치·기한·예외·서류는 해당 공고와 현행 적용 기준을 확인하세요.</p></section>`;
+  return `<p class="pc-intro">${esc(chapter.intro)}</p>
+    <section class="pc-section"><h3>01 · 먼저 익힐 용어</h3><dl class="pc-terms">${chapter.terms.map(([title,text])=>`<div><dt>${esc(title)}</dt><dd>${esc(text)}</dd></div>`).join('')}</dl></section>
+    <section class="pc-section"><h3>02 · 개념을 쉽게 이해하기</h3>${chapter.sections.map(([title,text],i)=>`<section class="pc-explanation"><h4><span>${i+1}</span> ${esc(title)}</h4><p>${esc(text)}</p></section>`).join('')}</section>
+    ${renderCoreLearning(chapter,printable)}
+    <section class="pc-section"><h3>03 · 업무 처리 순서</h3>${courseList(chapter.steps)}</section>
+    <section class="pc-section pc-documents"><h3>04 · 작성·확인할 서류</h3>${courseList(chapter.documents,'ul')}</section>
+    ${renderCourseCase(chapter,printable)}
+    <section class="pc-section pc-traps"><h3>05 · 헷갈리지 않도록 확인하기</h3>${courseList(chapter.pitfalls,'ul')}</section>
+    <section class="pc-section"><h3>06 · 내 말로 설명할 수 있나요?</h3>${courseList(chapter.checks,'ul')}<p class="pr-help">세 문장을 답안의 점검 기준으로 활용하세요. 직접 작성·체크하는 기능은 예상문제 → 실기에 있습니다.</p></section>
+    <section class="pc-section"><h3>공식 자료와 적용 근거</h3>${courseReferences(chapter)}<p class="pr-help">본문은 개념 학습을 위한 설명입니다. 세부 수치·기한·예외·서류는 해당 공고와 현행 적용 기준을 확인하세요.</p></section>`;
 }
 
 function reading(chapter,state) {
