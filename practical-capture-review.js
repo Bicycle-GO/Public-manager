@@ -2,6 +2,8 @@
 // Source question numbers are retained; explanations are rewritten and checked
 // against official guidance. A review is not an assertion that old screenshots
 // describe the current KONEPS interface or legal requirements.
+import { driveReviewedQuestions } from './practical-drive-review.js';
+
 const reviewedDate = '2026-10-23';
 const sourceNote = '사용자가 제공한 전자책 캡처의 단원별 핵심문제를 검토하여 학습용으로 재구성했습니다. 원문 번호와 주제를 연결하되, 현재 안내와 다른 표현은 바로잡고 풀이를 새로 설명했습니다. 공식 기출문제 또는 출제기관의 모범답안은 아닙니다.';
 const registrationRef = {title:'조달청 · 입찰참가자격 등록업무 안내',url:'https://pps.go.kr/kor/content.do?key=00170'};
@@ -16,7 +18,7 @@ const catalogDecreeRef = {title:'국가법령정보센터 · 물품목록법 시
 const catalogRuleRef = {title:'국가법령정보센터 · 물품목록정보의 관리 및 이용에 관한 규정',url:'https://www.law.go.kr/admRulLsInfoP.do?admRulId=24589&efYd=0'};
 const catalogGuidelineRef = {title:'국가법령정보센터 · 목록화지침',url:'https://www.law.go.kr/LSW/admRulLsInfoP.do?admRulSeq=2100000270308'};
 
-export const reviewedQuestions = [
+export const captureReviewedQuestions = [
   {
     id:'review-reg-01',chapterId:'sp1-01',title:'2024년 공공조달 시장 규모와 통계의 기준',kind:'단답·서술형',minutes:6,
     scenario:'2024년 기준 우리나라 공공조달 전체 규모는 약 얼마인지 답하고, “전체 공공조달 규모”와 “나라장터 거래금액”이 같은 개념인지 설명하시오. 답안에는 기준 연도와 금액 단위를 함께 쓰시오.',
@@ -172,6 +174,7 @@ export const reviewedQuestions = [
   }
 ];
 
+export const reviewedQuestions = [...captureReviewedQuestions, ...driveReviewedQuestions];
 export const findReviewedQuestion = id => typeof id === 'string' ? reviewedQuestions.find(question => question.id === id) : undefined;
 
 function ownValue(record, key) {

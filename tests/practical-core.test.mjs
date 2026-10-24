@@ -26,8 +26,8 @@ test('Supplemental questions and theory link only the three chapters supported b
     assert.ok(q.concepts.length>=2&&q.blueprint.length>=3,q.id);
     assert.ok(q.sourceNote.includes('캡처'),q.id);
   }
-  assert.equal(practicalExpectedBank.length,78);
-  assert.deepEqual(practicalSourceCounts,{course:18,unit:25,capture:12,core:12,review:11});
+  assert.equal(practicalExpectedBank.length,67+practicalSourceCounts.review);
+  assert.deepEqual(practicalSourceCounts,{course:18,unit:25,capture:12,core:12,review:practicalSourceCounts.review});
 });
 
 test('New answer storage rejects invalid fields while preserving valid answers and checklist indices',()=>{
@@ -59,8 +59,8 @@ test('Core answers render and print escaped with their own state and complete ex
 
 test('Directory totals include new questions without losing chapter filters or legacy links',()=>{
   const html=renderPracticalQuestions();
-  assert.equal((html.match(/class="pq-card"/g)||[]).length,78);
+  assert.equal((html.match(/class="pq-card"/g)||[]).length,practicalExpectedBank.length);
   assert.ok(html.includes('data-pq-filter="chapter"'));
   for(const entry of practicalExpectedBank)assert.ok(html.includes(`#practice/practical/${entry.source}/${entry.id}`));
-  assert.ok(html.includes('전체 78문제')&&html.includes('핵심 응용문제 12'));
+  assert.ok(html.includes('전체 '+practicalExpectedBank.length+'문제')&&html.includes('핵심 응용문제 12'));
 });

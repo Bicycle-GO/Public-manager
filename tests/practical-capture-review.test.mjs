@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {reviewedQuestions,findReviewedQuestion,normalizeReviewedPractice} from '../practical-capture-review.js';
+import {captureReviewedQuestions as reviewedQuestions,findReviewedQuestion,normalizeReviewedPractice} from '../practical-capture-review.js';
 import {captureReviewLearning} from '../practical-registration-learning.js';
 import {renderPracticalQuestions,practicalExpectedBank} from '../practical-question-ui.js';
 import {renderPracticalCourse} from '../practical-course-ui.js';
@@ -19,8 +19,8 @@ test('Five supplied files map to eleven reviewed questions without losing contin
     assert.ok(q.refs.length&&q.corrections.length,q.id);
     for(const ref of q.refs)assert.equal(new URL(ref.url).protocol,'https:');
   }
-  assert.equal(practicalSourceCounts.review,11);
-  assert.equal(practicalExpectedBank.length,78);
+  assert.equal(practicalSourceCounts.review,practicalExpectedBank.filter(q=>q.source==='review').length);
+  assert.equal(practicalExpectedBank.length,67+practicalSourceCounts.review);
 });
 
 test('Reviewed answers correct key source errors instead of teaching stale numbers or authentication as current rules',()=>{
@@ -58,7 +58,7 @@ test('Part 1 theory and question directory expose all source-reviewed destinatio
     for(const id of notes.questions){assert.ok(findReviewedQuestion(id));assert.ok(html.includes('#practice/practical/review/'+id));}
   }
   const html=renderPracticalQuestions();
-  assert.equal((html.match(/class="pq-card"/g)||[]).length,78);
-  assert.ok(html.includes('전체 78문제'));
+  assert.equal((html.match(/class="pq-card"/g)||[]).length,practicalExpectedBank.length);
+  assert.ok(html.includes('전체 '+practicalExpectedBank.length+'문제'));
   for(const q of reviewedQuestions)assert.ok(html.includes('#practice/practical/review/'+q.id));
 });

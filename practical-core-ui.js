@@ -11,15 +11,15 @@ function explanation(question) {
 
 function renderSourceReview(question) {
   if(!Array.isArray(question.sourceFiles))return '';
-  return `<section class="pc-section"><h3>원문과 공식 안내를 비교해 보세요</h3><p class="pr-help">검토 대상: ${esc(question.sourceFiles.join(' / '))} · ${esc(question.sourceNumber)}</p>${question.corrections.map(item=>`<section class="pc-traps"><h4>캡처의 표현</h4><p>${esc(item.original)}</p><h4>학습할 내용</h4><p>${esc(item.corrected)}</p><p class="pc-reason"><strong>검토 이유</strong>${esc(item.reason)}</p></section>`).join('')}<h4>확인한 공식 자료 · 2026. 10. 23.</h4><ul>${question.refs.map(ref=>`<li><a href="${esc(ref.url)}" target="_blank" rel="noopener noreferrer">${esc(ref.title)} ↗</a></li>`).join('')}</ul></section>`;
+  return `<section class="pc-section"><h3>원문 검토와 보충 설명</h3><p class="pr-help">검토 대상: ${esc(question.sourceFiles.join(' / '))} · ${esc(question.sourceNumber)}</p>${(question.corrections||[]).map(item=>`<section class="pc-traps"><h4>캡처의 표현</h4><p>${esc(item.original)}</p><h4>학습할 내용</h4><p>${esc(item.corrected)}</p><p class="pc-reason"><strong>검토 이유</strong>${esc(item.reason)}</p></section>`).join('')}${question.refs.length?`<h4>확인한 공식 자료 · ${esc(question.reviewedDate)}</h4><ul>${question.refs.map(ref=>`<li><a href="${esc(ref.url)}" target="_blank" rel="noopener noreferrer">${esc(ref.title)} ↗</a></li>`).join('')}</ul>`:''}<p class="pr-help">${esc(question.reviewStatus||'원문·공식 안내 대조')} · 검토일 ${esc(question.reviewedDate)}</p></section>`;
 }
 
 export function renderCoreQuestion(question, state) {
-  const reviewed=Array.isArray(question.sourceFiles),source=reviewed?'review':'core',label=reviewed?'단원 핵심문제 · 검토본':'핵심 응용문제';
+  const reviewed=Array.isArray(question.sourceFiles),source=reviewed?'review':'core',label=question.batch?'드라이브 자료 · 검토본':reviewed?'단원 핵심문제 · 검토본':'핵심 응용문제';
   const chapter=findPracticalChapter(question.chapterId),done=state.completed.includes(question.id),draft=state.drafts[question.id]||'',checks=state.checks[question.id]||[];
-  return `<div class="page-heading"><div><div class="eyebrow">PRACTICAL · CORE APPLICATION</div><h1>${esc(question.title)}</h1><p>${reviewed?'제공된 핵심문제를 공식 자료와 대조한': '핵심 개념을 새로운 조건에 적용하는'} ${esc(question.kind)} · 권장 ${question.minutes}분</p></div><a class="soft-button" href="#practice/practical">실기 예상문제 전체</a></div>
+  return `<div class="page-heading"><div><div class="eyebrow">PRACTICAL · CORE APPLICATION</div><h1>${esc(question.title)}</h1><p>${reviewed?'제공된 자료의 주제를 검토하고 풀이를 보강한': '핵심 개념을 새로운 조건에 적용하는'} ${esc(question.kind)} · 권장 ${question.minutes}분</p></div><a class="soft-button" href="#practice/practical">실기 예상문제 전체</a></div>
   <nav class="pr-breadcrumb" aria-label="실기 핵심 응용문제 경로"><a href="#practice/practical">실기 예상문제</a><span>/</span><a href="${practicalChapterUrl(chapter)}">PART ${chapter.part} · ${esc(chapter.title)}</a></nav>
-  <article class="pc-reading-card pq-writing"><span class="pr-pill">${label} · ${esc(question.kind)}</span>${reviewed?`<aside class="pc-scope"><strong>자료 ${esc(question.sourceNumber)} · ${esc(question.sourceFiles.join(' / '))}</strong><p>${esc(question.reviewNotice)}</p></aside>`:''}<h2>문제</h2><p class="pc-scenario">${esc(question.scenario)}</p>
+  <article class="pc-reading-card pq-writing"><span class="pr-pill">${label} · ${esc(question.kind)}</span><h2>문제</h2><p class="pc-scenario">${esc(question.scenario)}</p>
   <details class="pc-case"><summary>막힐 때 보기 · 핵심 개념과 답안 작성 틀</summary><div>${hints(question)}</div></details>
   <label for="pq-draft">나의 답안</label><p id="pq-draft-help" class="pr-help">계산형은 식 → 숫자 대입 → 단위 → 해석, 서술형은 개념 → 사례에 적용 → 판단 근거 순서로 작성하세요. 해설과 비교하여 직접 점검합니다.</p>
   <textarea id="pq-draft" rows="10" data-pq-draft="${question.id}" data-pq-source="${source}" aria-describedby="pq-draft-help" placeholder="조건과 구하려는 값을 먼저 적고, 판단이나 계산 과정을 설명해 보세요.">${esc(draft)}</textarea><p id="pq-save-status" class="pr-save-status" role="status" aria-live="polite">${draft?'저장된 답안을 불러왔습니다.':'입력하면 이 브라우저에 자동 저장됩니다.'}</p>

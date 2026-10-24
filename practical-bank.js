@@ -8,7 +8,7 @@ export const practicalExpectedBank = [
   ...practicalChapters.map(ch => ({source:'course',id:ch.id,part:ch.part,title:ch.title,chapter:ch,kind:'주제별 사례'})),
   ...practicalUnits.map(unit => ({source:'unit',id:unit.id,part:chapterForUnit(unit.id).part,title:unit.title,chapter:chapterForUnit(unit.id),kind:'출제기준 사례'})),
   ...workbookQuestions.map(q => ({source:'capture',id:q.id,part:chapterForCapture(q.id).part,title:q.title,chapter:chapterForCapture(q.id),kind:q.kind})),
-  ...reviewedQuestions.map(q => ({source:'review',id:q.id,part:findPracticalChapter(q.chapterId).part,title:q.title,chapter:findPracticalChapter(q.chapterId),kind:q.kind})),
+  ...reviewedQuestions.map(q => ({source:'review',batch:q.batch||'capture-review',searchText:[q.sourceNumber,...q.sourceFiles].join(' '),id:q.id,part:findPracticalChapter(q.chapterId).part,title:q.title,chapter:findPracticalChapter(q.chapterId),kind:q.kind})),
   ...coreQuestions.map(q => ({source:'core',id:q.id,part:findPracticalChapter(q.chapterId).part,title:q.title,chapter:findPracticalChapter(q.chapterId),kind:q.kind}))
 ].sort((a,b) => a.part-b.part);
 

@@ -2,6 +2,8 @@ import { practicalParts, practicalChapters, courseSources, findPracticalChapter,
 import { practicalAreas, practicalEdition } from './practical-data.js';
 import { findPracticalCoreLearning } from './practical-core-learning.js';
 import { captureReviewLearning } from './practical-registration-learning.js';
+import { driveLearning } from './practical-drive-learning.js';
+import { driveReviewedQuestions } from './practical-drive-review.js';
 
 export const courseEsc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const esc = courseEsc;
@@ -10,7 +12,7 @@ export const courseList = (values, tag = 'ol') => `<${tag}>${values.map(value=>`
 const partUrl = part => `#theory/practical/part/${part}`;
 export const courseReferences = chapter => `<div class="pr-source-links">${chapter.refs.map(key=>`<a href="${esc(courseSources[key][1])}" target="_blank" rel="noopener noreferrer">${esc(courseSources[key][0])} ↗</a>`).join('')}</div>`;
 const heading = (title,description,eyebrow='PRACTICAL FOUNDATIONS · 7 PARTS') => `<div class="page-heading"><div><div class="eyebrow">${eyebrow}</div><h1>${esc(title)}</h1><p>${esc(description)}</p></div><a class="soft-button" href="#theory/practical/print">실기 이론 전체 · 인쇄</a></div>`;
-const scope = () => `<aside class="pc-scope"><strong>학습 목차와 출제기준을 함께 확인하세요</strong><p>요청하신 7개 PART·18개 주제를 위한 자체 작성 학습자료입니다. 첨부 출제기준의 8개 주요항목·25개 세부항목은 별도 대응표로 연결했습니다. 사례·모범답안·자가점검은 학습용이며 공식 기출·채점기준이 아닙니다. 법제도는 기관 유형·공고와 시험의 적용 기준일을 확인합니다.</p><a href="#theory/practical/criteria">출제기준 대응표 보기 →</a><small>자료 정리·공식 안내 확인: 2026. 10. 21.</small></aside>`;
+const scope = () => `<aside class="pc-scope"><strong>학습 목차와 출제기준을 함께 확인하세요</strong><p>요청하신 7개 PART·18개 주제를 위한 자체 작성 학습자료입니다. 첨부 출제기준의 8개 주요항목·25개 세부항목은 별도 대응표로 연결했습니다. 사례·모범답안·자가점검은 학습용이며 공식 기출·채점기준이 아닙니다. 법제도는 기관 유형·공고와 시험의 적용 기준일을 확인합니다.</p><a href="#theory/practical/criteria">출제기준 대응표 보기 →</a><small>기본 목차 2026. 10. 21. · 추가 사진 보충학습 2026. 10. 24.</small></aside>`;
 
 function partCard(part,state) {
   const chapters=practicalChapters.filter(ch=>ch.part===part.id),done=chapters.filter(ch=>state.completed.includes(ch.id)).length;
@@ -30,20 +32,19 @@ export function renderCourseCase(chapter, expanded=false) {
 }
 
 export function renderCoreLearning(chapter, printable=false) {
-  const core=captureReviewLearning[chapter.id]||findPracticalCoreLearning(chapter.id);
-  if(!core)return '';
-  return `<section class="pc-section pc-core-learning" aria-label="캡처 주제 보충 학습">
+  const supplements=[captureReviewLearning[chapter.id],findPracticalCoreLearning(chapter.id),...(driveLearning[chapter.id]||[])].filter(Boolean);
+  return supplements.map(core=>`<section class="pc-section pc-core-learning" aria-label="캡처 주제 보충 학습">
     <h3>보충 학습 · ${esc(core.title)}</h3>
-    <aside class="pc-scope"><strong>${esc(core.provenance)}</strong><p>${esc(core.scope)}</p><small>${esc(core.scopeNote||'이 보충자료는 앞서 받은 시장분석·수요예측·원가계산 캡처 범위를 다룹니다. 전자책 전체 내용을 확인·요약한 자료는 아닙니다.')} 보충 설명 정리: 2026. 10. 23.</small></aside>
+    <aside class="pc-scope"><strong>${esc(core.provenance)}</strong><p>${esc(core.scope)}</p><small>${esc(core.scopeNote||'이 보충자료는 앞서 받은 시장분석·수요예측·원가계산 캡처 범위를 다룹니다. 전자책 전체 내용을 확인·요약한 자료는 아닙니다.')} 보충 설명 정리: ${esc(core.reviewedDate||'2026-10-23')}.</small></aside>
     <section class="pc-explanation"><h4>이 내용을 익히면 할 수 있는 일</h4>${courseList(core.objectives,'ul')}</section>
     ${core.notes.map(note=>`<section class="pc-explanation"><h4>${esc(note.title)}</h4><p>${esc(note.text)}</p></section>`).join('')}
     ${core.comparisons.map(group=>`<section class="pc-explanation"><h4>${esc(group.title)}</h4><dl class="pc-terms">${group.items.map(([title,text])=>`<div><dt>${esc(title)}</dt><dd>${esc(text)}</dd></div>`).join('')}</dl></section>`).join('')}
     ${core.examples.map(example=>`<details class="pc-case" ${printable?'open':''}><summary>${esc(example.title)} · 단계별 풀이</summary><div><p class="pc-scenario">${esc(example.condition)}</p>${example.steps.map(([title,text],i)=>`<section><h4>${num(i+1)} · ${esc(title)}</h4><p>${esc(text)}</p></section>`).join('')}<p class="pc-reason"><strong>답안으로 연결하기</strong>${esc(example.conclusion)}</p></div></details>`).join('')}
     <section class="pc-documents"><h4>내 답안에 적용할 작성 틀</h4>${courseList(core.answerFrame,'ul')}</section>
     <section class="pc-explanation"><h4>스스로 설명한 뒤 확인하세요</h4>${core.selfExplain.map(([question,answer])=>`<details class="pc-case" ${printable?'open':''}><summary>${esc(question)}</summary><div><p>${esc(answer)}</p></div></details>`).join('')}</section>
-    ${core.refs?`<section class="pc-explanation"><h4>검토에 사용한 공식 자료 · 2026. 10. 23.</h4><ul>${core.refs.map(ref=>`<li><a href="${esc(ref.url)}" target="_blank" rel="noopener noreferrer">${esc(ref.title)} ↗</a></li>`).join('')}</ul></section>`:''}
-    ${printable?'':`<nav aria-label="이 단원의 핵심문제"><h4>예상문제에서 직접 써 보기</h4><p>개념을 이해했다면 핵심문제의 조건을 읽고 답안을 작성한 뒤 해설과 비교하세요.</p><ul>${core.questions.map((id,i)=>`<li><a class="pc-back" href="${practicalQuestionUrl(core.questionSource||'core',id)}">단원 핵심문제 ${num(i+1)} · 문제·답안 연습 →</a></li>`).join('')}</ul></nav>`}
-  </section>`;
+    ${core.refs?`<section class="pc-explanation"><h4>검토에 사용한 공식 자료 · ${esc(core.reviewedDate||'2026-10-23')}</h4><ul>${core.refs.map(ref=>`<li><a href="${esc(ref.url)}" target="_blank" rel="noopener noreferrer">${esc(ref.title)} ↗</a></li>`).join('')}</ul></section>`:''}
+    ${printable?'':`<nav aria-label="이 단원의 핵심문제"><h4>예상문제에서 직접 써 보기</h4><p>개념을 이해했다면 핵심문제의 조건을 읽고 답안을 작성한 뒤 해설과 비교하세요.</p><ul>${core.questions.map((id,i)=>`<li><a class="pc-back" href="${practicalQuestionUrl(core.questionSource||'core',id)}">${esc(driveReviewedQuestions.find(q=>q.id===id)?.title||'단원 핵심문제 '+num(i+1))} · 답안 연습 →</a></li>`).join('')}</ul></nav>`}
+  </section>`).join('');
 }
 
 export function renderCourseBody(chapter, printable=false) {
