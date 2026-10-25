@@ -1,0 +1,38 @@
+import { practicalParts, practicalChapters, practicalChapterUrl, practicalQuestionUrl } from './practical-course.js';
+import { practicalExpectedBank, practicalSourceLabels } from './practical-bank.js';
+import { courseEsc as esc } from './practical-course-ui.js';
+
+const num=value=>String(value).padStart(2,'0');
+export const partQuestionsUrl=(part,chapter='')=>`#practice/practical/part/${part}${chapter?'/'+chapter:''}`;
+export const practicalQuestionStore=(q,state)=>q.source==='review'?state.practicalCaptureReview:q.source==='core'?state.practicalCorePractice:q.source==='course'?state.practicalCoursePractice:q.source==='unit'?state.practical:state.practicalWorkbook;
+const isDone=(q,state)=>practicalQuestionStore(q,state).completed.includes(q.id);
+const progress=(bank,state)=>({total:bank.length,done:bank.filter(q=>isDone(q,state)).length,written:bank.filter(q=>practicalQuestionStore(q,state).drafts[q.id]?.trim()).length});
+const heading=(title,description)=>`<div class="page-heading"><div><div class="eyebrow">EXPECTED QUESTIONS · PRACTICAL</div><h1>${esc(title)}</h1><p>${esc(description)}</p></div><a class="soft-button" href="#practice/practical/all">전체 문제 · 검색</a></div>`;
+
+export function renderPracticalQuestionCard(q,state){
+  const saved=practicalQuestionStore(q,state),done=isDone(q,state),draft=!!saved.drafts[q.id]?.trim();
+  return `<article class="pq-card" data-pq-part="${q.part}" data-pq-chapter="${q.chapter.id}" data-pq-batch="${q.batch||'existing'}" data-pq-source="${q.source}" data-pq-status="${done?'completed':draft?'written':'unwritten'}" data-pq-written="${draft}" data-pq-title="${esc(q.title+' '+q.chapter.title+' '+(q.searchText||''))}"><div class="pq-card-meta"><span>PART ${q.part} · ${esc(q.kind)}</span><small>${done?'✓ 학습 완료':draft?'작성한 답안 있음':'아직 미작성'}</small></div><h2><a href="${practicalQuestionUrl(q.source,q.id)}">${esc(q.title)}</a></h2><p>${q.batch==='drive-20261024'?'드라이브 추가분 · ':''}${esc(practicalSourceLabels[q.source])}</p><div><a href="${practicalQuestionUrl(q.source,q.id)}">문제·답안 연습 →</a><a href="${practicalChapterUrl(q.chapter)}">기본이론</a></div></article>`;
+}
+
+function partCard(part,state){
+  const bank=practicalExpectedBank.filter(q=>q.part===part.id),stats=progress(bank,state),chapters=practicalChapters.filter(ch=>ch.part===part.id);
+  return `<article class="pc-part-card pq-part-card" data-pq-part-card="${part.id}"><div class="pc-card-top"><span>PART ${num(part.id)}</span><small>${stats.total}문제 · ${stats.done}개 완료</small></div><h2><a href="${partQuestionsUrl(part.id)}">${esc(part.title)}</a></h2><p>${esc(part.summary)}</p><ol>${chapters.map((ch,i)=>{
+    const items=bank.filter(q=>q.chapter.id===ch.id),done=items.filter(q=>isDone(q,state)).length;
+    return `<li><a href="${partQuestionsUrl(part.id,ch.id)}"><span>${num(i+1)}</span><strong>${esc(ch.title)}</strong><span class="pq-chapter-count">${done}/${items.length} 완료</span></a></li>`;
+  }).join('')}</ol><a class="pc-part-link" href="${partQuestionsUrl(part.id)}">PART ${num(part.id)} 문제 풀기 →</a></article>`;
+}
+
+export function renderPracticalQuestionOverview(state){
+  const stats=progress(practicalExpectedBank,state);
+  return `${heading('실기 예상문제','기본이론과 같은 7개 PART·18개 단원에서 공부할 주제를 선택하세요.')}<section class="pc-hero pq-overview-hero"><div><span class="pr-pill">PART 선택 → 단원 선택 → 답안 작성</span><h2>배운 순서대로,<br>문제를 풀어 보세요.</h2><p>각 단원의 사례·단답·서술·계산 문제를 모았습니다.<br>답안을 작성하고 모범답안·단계별 풀이와 비교하세요.</p><div class="pc-actions"><a class="button" href="${partQuestionsUrl(1)}">PART 01부터 시작하기 →</a><a class="soft-button" href="#theory/practical">실기 기본이론 목차</a></div></div><div class="pc-hero-count"><strong>${stats.total}<span>문제</span></strong><p>답안 작성 ${stats.written} · 학습 완료 ${stats.done}</p><span>7 PART · 18 CHAPTER</span></div></section><nav class="pc-part-jumps" aria-label="실기 예상문제 PART 바로가기">${practicalParts.map(p=>`<a href="${partQuestionsUrl(p.id)}">PART ${num(p.id)}</a>`).join('')}</nav><div class="pc-parts-grid">${practicalParts.map(part=>partCard(part,state)).join('')}</div><section class="pc-scope"><strong>필요한 문제를 찾아서 복습하세요</strong><p>전체 문제 검색에서는 PART·단원·자료 묶음·학습 상태를 함께 선택할 수 있습니다.</p><a href="#practice/practical/all">전체 ${stats.total}문제 · 검색과 필터 →</a><p><a href="#practice/practical/print">실기 문제 전체 · 인쇄</a></p></section>`;
+}
+
+export function renderPracticalPartQuestions(part,chapter,state){
+  const chapters=practicalChapters.filter(ch=>ch.part===part.id),selected=chapter?.part===part.id?chapter:null;
+  const bank=practicalExpectedBank.filter(q=>q.part===part.id&&(!selected||q.chapter.id===selected.id)),stats=progress(bank,state);
+  const groups=selected?[selected]:chapters;
+  return `${heading(selected?selected.title:`PART ${num(part.id)}. ${part.title}`,selected?`PART ${num(part.id)} · 이 단원의 예상문제 ${stats.total}개`:`${part.summary} 단원별 ${stats.total}문제를 풀어 보세요.`)}<nav class="pr-breadcrumb" aria-label="실기 예상문제 목차 경로"><a href="#practice/practical">7개 PART 전체 목차</a><span>/</span><a href="${partQuestionsUrl(part.id)}">PART ${num(part.id)}</a>${selected?`<span>/</span><span>${esc(selected.title)}</span>`:''}</nav><nav class="pc-part-jumps" aria-label="다른 PART 문제 선택">${practicalParts.map(p=>`<a href="${partQuestionsUrl(p.id)}" ${p.id===part.id?'aria-current="page"':''}>PART ${num(p.id)}</a>`).join('')}</nav><div class="pc-reading-layout pq-part-layout"><aside class="pc-reading-nav"><h2>PART ${num(part.id)}</h2><p>${esc(part.title)}</p><nav aria-label="이 PART의 예상문제 단원"><a href="${partQuestionsUrl(part.id)}" ${!selected?'aria-current="page"':''}>이 PART 전체 문제</a>${chapters.map((ch,i)=>`<a href="${partQuestionsUrl(part.id,ch.id)}" ${selected?.id===ch.id?'aria-current="page"':''}><span>${num(i+1)}</span>${esc(ch.title)}<small>${practicalExpectedBank.filter(q=>q.chapter.id===ch.id).length}문제</small></a>`).join('')}</nav><a href="#practice/practical">7개 PART 전체 목차 →</a><a href="${selected?practicalChapterUrl(selected):'#theory/practical/part/'+part.id}">관련 기본이론 →</a></aside><div class="pq-part-content"><div class="pq-part-progress">${stats.total}문제 · 답안 작성 ${stats.written} · 완료 ${stats.done}</div><div class="pq-toolbar pq-part-filters"><label>문제 구성<select data-pq-filter="source" aria-label="문제 구성"><option value="all">전체 구성</option>${Object.entries(practicalSourceLabels).filter(([source])=>bank.some(q=>q.source===source)).map(([source,label])=>`<option value="${source}">${esc(label)}</option>`).join('')}</select></label><label>자료 묶음<select data-pq-filter="batch" aria-label="자료 묶음"><option value="all">전체 자료</option><option value="drive-20261024">드라이브 추가분</option><option value="capture-review">앞선 5장 캡처 검토본</option><option value="existing">기존 사례·응용문제</option></select></label><label>학습 상태<select data-pq-filter="status" aria-label="학습 상태"><option value="all">전체 상태</option><option value="unwritten">아직 미작성</option><option value="written">답안 작성함</option><option value="completed">학습 완료</option></select></label><label>문제 검색<input type="search" data-pq-filter="search" aria-label="문제 검색" placeholder="이 PART에서 검색"></label></div><div class="pq-results"><p role="status" id="pq-visible-count">${stats.total}문제 표시</p><a href="#practice/practical/all">전체 문제 검색 →</a></div>${groups.map(ch=>{
+    const items=bank.filter(q=>q.chapter.id===ch.id);
+    return `<section class="pq-chapter-group" data-pq-chapter-group="${ch.id}"><div class="pq-chapter-heading"><div><span>CHAPTER ${num(chapters.indexOf(ch)+1)} · ${items.length}문제</span><h2>${esc(ch.title)}</h2></div><a href="${practicalChapterUrl(ch)}">기본이론 →</a></div><div class="pq-grid">${items.map(q=>renderPracticalQuestionCard(q,state)).join('')}</div></section>`;
+  }).join('')}<p id="pq-no-results" class="pc-scope" hidden>조건에 맞는 문제가 없습니다. 문제 구성·자료 묶음·학습 상태·검색어를 바꿔 보세요.</p></div></div>`;
+}

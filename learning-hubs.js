@@ -49,7 +49,7 @@ export function resolveCourseRoute(hash = '') {
     return { page, mode:'hub' };
   }
   if(page==='practice') {
-    if(first==='practical')return {page,mode:'practical',source:second,questionId:third};
+    if(first==='practical')return second==='part'?{page,mode:'practical',source:second,questionId:third,chapterId:fourth}:{page,mode:'practical',source:second,questionId:third};
     if(first==='written') {
       if(['1','2','3'].includes(second))return {page,mode:'written',subjectId:second,lessonId:third,statusId:fourth,canonical:'#practice/'+second+(third?'/'+third:'')+(fourth?'/'+fourth:'')};
       return {page,mode:'written'};

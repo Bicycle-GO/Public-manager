@@ -58,7 +58,7 @@ test('Core answers render and print escaped with their own state and complete ex
 });
 
 test('Directory totals include new questions without losing chapter filters or legacy links',()=>{
-  const html=renderPracticalQuestions();
+  const html=renderPracticalQuestions({source:'all'});
   assert.equal((html.match(/class="pq-card"/g)||[]).length,practicalExpectedBank.length);
   assert.ok(html.includes('data-pq-filter="chapter"'));
   for(const entry of practicalExpectedBank)assert.ok(html.includes(`#practice/practical/${entry.source}/${entry.id}`));

@@ -74,7 +74,7 @@ test('Drive and older reviewed answers coexist, escape drafts and appear in ques
 });
 
 test('Directory supports intersecting Drive batch, chapter and filename search without hiding older questions by default',()=>{
-  const html=renderPracticalQuestions();
+  const html=renderPracticalQuestions({source:'all'});
   assert.equal((html.match(/class="pq-card"/g)||[]).length,practicalExpectedBank.length);
   assert.ok(html.includes('data-pq-filter="batch"')&&html.includes('사진 46장'));
   assert.ok(html.includes('전체 '+practicalExpectedBank.length+'문제'));
@@ -82,7 +82,7 @@ test('Directory supports intersecting Drive batch, chapter and filename search w
   const values={part:'all',chapter:'all',source:'all',batch:'drive-20261024',status:'all',search:''};
   const nodes=practicalExpectedBank.map(item=>({hidden:false,dataset:{pqPart:String(item.part),pqChapter:item.chapter.id,pqSource:item.source,pqBatch:item.batch||'existing',pqTitle:item.title+' '+(item.searchText||''),pqWritten:'false',pqStatus:'unwritten'}}));
   const count={},empty={};
-  const root={querySelector(selector){if(selector==='#pq-visible-count')return count;if(selector==='#pq-no-results')return empty;const key=selector.match(/data-pq-filter="(.*?)"/)?.[1];return {value:values[key]};},querySelectorAll(){return nodes;}};
+  const root={querySelector(selector){if(selector==='#pq-visible-count')return count;if(selector==='#pq-no-results')return empty;const key=selector.match(/data-pq-filter="(.*?)"/)?.[1];return {value:values[key]};},querySelectorAll(selector){return selector==='.pq-card'?nodes:[];}};
   filterPracticalQuestions(root);
   assert.equal(nodes.filter(n=>!n.hidden).length,driveReviewedQuestions.length);
   values.chapter=q.chapterId;values.search=q.sourceFiles[0];filterPracticalQuestions(root);

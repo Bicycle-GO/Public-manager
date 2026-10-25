@@ -9,6 +9,7 @@ import { findCoreQuestion, normalizeCorePractice } from './practical-core-questi
 import { findReviewedQuestion, normalizeReviewedPractice } from './practical-capture-review.js';
 import { renderCoreQuestion, renderCoreQuestionPrint } from './practical-core-ui.js';
 import { renderDriveUpdate } from './practical-drive-ui.js';
+import { renderPracticalQuestionOverview, renderPracticalPartQuestions, partQuestionsUrl } from './practical-question-navigation.js';
 export { practicalExpectedBank } from './practical-bank.js';
 
 const sourceNames=Object.fromEntries(Object.entries(practicalSourceLabels).map(([key,label])=>[key,`${label} ${practicalSourceCounts[key]}`]));
@@ -39,7 +40,7 @@ function printable(state) {
   }).join('')}</section>`).join('')}${renderWorkbookPrint(state.practicalWorkbook,true)}`;
 }
 
-export function renderPracticalQuestions({source='',questionId='',practical={},workbook={},coursePractice={},corePractice={},reviewPractice={}}={}) {
+export function renderPracticalQuestions({source='',questionId='',chapterId='',practical={},workbook={},coursePractice={},corePractice={},reviewPractice={}}={}) {
   const state={practical:normalizePracticalState(practical),practicalWorkbook:normalizeWorkbookState(workbook),practicalCoursePractice:normalizeCoursePractice(coursePractice),practicalCorePractice:normalizeCorePractice(corePractice),practicalCaptureReview:normalizeReviewedPractice(reviewPractice)};
   let html;
   if(source==='print') html=printable(state);
@@ -52,7 +53,13 @@ export function renderPracticalQuestions({source='',questionId='',practical={},w
   else if(source==='unit'&&practicalUnits.some(u=>u.id===questionId)) {
     const unit=practicalUnits.find(u=>u.id===questionId),chapter=chapterForUnit(questionId);
     html=`${heading(unit.title,'첨부 출제기준의 세부항목에 연결한 기존 사례 · 저장한 답안을 이어서 작성하세요.')}${breadcrumb(chapter)}<article class="pc-reading-card"><details class="pc-case"><summary>관련 개념·절차 먼저 보기</summary><div>${teaching(unit)}<a href="${practicalChapterUrl(chapter)}">새 기본이론에서 더 자세히 읽기 →</a></div></details>${exercise(unit,state.practical)}${renderWorkbookLinks(unit.id,state.practicalWorkbook)}</article>`;
-  } else html=directory(state);
+  } else if(source==='all') html=`<a class="pc-back" href="#practice/practical">← 7개 PART 전체 목차</a>${directory(state)}`;
+  else if(source==='part') {
+    const part=practicalParts.find(p=>String(p.id)===questionId);
+    html=part?renderPracticalPartQuestions(part,findPracticalChapter(chapterId),state):renderPracticalQuestionOverview(state);
+  } else html=renderPracticalQuestionOverview(state);
+  const question=practicalExpectedBank.find(q=>q.source===source&&q.id===questionId);
+  if(question)html=`<nav class="pq-return-nav" aria-label="문제 목록으로 돌아가기"><a href="${partQuestionsUrl(question.part)}">← PART ${question.part} 문제 목록</a><a href="${partQuestionsUrl(question.part,question.chapter.id)}">${esc(question.chapter.title)} · 단원 문제</a></nav>${html}`;
   return `<div class="practical practical-questions ${source==='print'||questionId==='print'?'pr-print-view':''}">${html}</div>`;
 }
 
@@ -63,6 +70,9 @@ export function filterPracticalQuestions(root=document) {
   root.querySelectorAll('.pq-card').forEach(card=>{
     const matches=(part==='all'||card.dataset.pqPart===part)&&(chapter==='all'||card.dataset.pqChapter===chapter)&&(source==='all'||card.dataset.pqSource===source)&&(batch==='all'||card.dataset.pqBatch===batch)&&(status==='all'||(status==='written'?card.dataset.pqWritten==='true':status==='unwritten'?card.dataset.pqWritten!=='true':card.dataset.pqStatus===status))&&card.dataset.pqTitle.toLocaleLowerCase().includes(search);
     card.hidden=!matches;if(matches)count++;
+  });
+  root.querySelectorAll('[data-pq-chapter-group]').forEach(group=>{
+    group.hidden=![...group.querySelectorAll('.pq-card')].some(card=>!card.hidden);
   });
   const countNode=root.querySelector('#pq-visible-count');if(countNode)countNode.textContent=`${count}문제 표시`;
   const empty=root.querySelector('#pq-no-results');if(empty)empty.hidden=count!==0;

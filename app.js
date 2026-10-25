@@ -72,7 +72,7 @@ let page = 'dashboard', filter = 0, query = '', quiz = null, selected = null, re
 let examInterval;
 let mockFormat = 'practice60';
 let theoryMode = 'hub', practiceMode = 'hub', mockMode = 'hub', practicalMockFormat = 'comprehensive8', practicalView = '', practicalResultId = '';
-let practicalTheoryRoute = { segment: '', unitId: '', chapterId: '' }, practicalQuestionRoute = { source:'', questionId:'' };
+let practicalTheoryRoute = { segment: '', unitId: '', chapterId: '' }, practicalQuestionRoute = { source:'', questionId:'', chapterId:'' };
 let activeLesson = null, practiceChapter = null, practiceStatus = 'all';
 const save = () => { try { localStorage.setItem('jodalon-v1', JSON.stringify(state)); return true; } catch { toast('저장 공간을 사용할 수 없어 이번 학습은 새로고침 시 사라질 수 있습니다.'); return false; } };
 const touch = () => { state.activity[day()] = (state.activity[day()] || 0) + 1; };
@@ -595,7 +595,7 @@ function route(){
  practiceMode=page==='practice' ? target.mode : 'hub';
  mockMode=page==='mock' ? target.mode : 'hub';
  practicalTheoryRoute={segment:target.segment || '',unitId:target.unitId || '',chapterId:target.chapterId || ''};
- practicalQuestionRoute={source:target.source || '',questionId:target.questionId || ''};
+ practicalQuestionRoute={source:target.source || '',questionId:target.questionId || '',chapterId:target.chapterId || ''};
  practicalView=target.view || ''; practicalResultId=target.resultId || '';
  const subjectId=target.subjectId, lessonId=target.lessonId, statusId=target.statusId;
  filter=['theory','practice'].includes(page) && subjects.some(s=>s.id===Number(subjectId)) ? Number(subjectId) : 0;

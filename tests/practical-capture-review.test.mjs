@@ -57,7 +57,7 @@ test('Part 1 theory and question directory expose all source-reviewed destinatio
     assert.ok(html.includes(notes.title));
     for(const id of notes.questions){assert.ok(findReviewedQuestion(id));assert.ok(html.includes('#practice/practical/review/'+id));}
   }
-  const html=renderPracticalQuestions();
+  const html=renderPracticalQuestions({source:'all'});
   assert.equal((html.match(/class="pq-card"/g)||[]).length,practicalExpectedBank.length);
   assert.ok(html.includes('전체 '+practicalExpectedBank.length+'문제'));
   for(const q of reviewedQuestions)assert.ok(html.includes('#practice/practical/review/'+q.id));
