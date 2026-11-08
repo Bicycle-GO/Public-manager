@@ -1,0 +1,159 @@
+/* Interactive motion lessons: scoped to preserve the surrounding reading UI. */
+.motion-question-badge { display: inline-block; margin: 5px 0; padding: 3px 9px; border-radius: 5px; background: #e7f5f1; color: #16685b; font-size: 12px; font-weight: 700; }
+.motion-learning {
+  --motion-blue: #1e5bb2;
+  --motion-teal: #087f78;
+  --motion-coral: #ad513d;
+  --motion-ink: #233f60;
+  --motion-line: #d7e3f2;
+  --motion-soft: #f0f5fc;
+  margin: 28px 0;
+  padding: clamp(18px, 3vw, 30px);
+  border: 1px solid #cbdcf3;
+  border-radius: 18px;
+  color: var(--motion-ink);
+  background: linear-gradient(145deg, #f5f9ff 0%, #fff 64%, #f1faf8 100%);
+  box-shadow: 0 8px 25px #23457008;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+.motion-learning *, .motion-learning *::before, .motion-learning *::after { box-sizing: border-box; }
+.motion-learning .motion-heading { display: flex; flex-direction: column; gap: 8px; margin: 0 0 12px; }
+.motion-learning .motion-eyebrow { width: fit-content; color: #205da6; background: #e7f0ff; border: 1px solid #cadcf7; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; letter-spacing: .03em; }
+.motion-learning .motion-heading h3 { margin: 0; font-size: clamp(20px, 2vw, 25px); line-height: 1.5; color: #173d70; }
+.motion-learning p.motion-description { margin: 0 0 12px; color: #45617f; font-size: 16px; line-height: 1.85; }
+.motion-learning .motion-assumptions { display: block; margin: 10px 0 20px; font-size: 13px; line-height: 1.8; color: #506986; }
+.motion-learning .motion-stage { margin: 18px 0; padding: clamp(14px, 2vw, 22px); min-width: 0; border: 1px solid var(--motion-line); border-radius: 13px; background: #fff; }
+.motion-learning .motion-reading { margin: 18px 0; padding: 18px 20px; border-left: 4px solid var(--motion-teal); border-radius: 0 12px 12px 0; background: #edf8f6; }
+.motion-learning .motion-step-title { display: block; margin: 0 0 8px; font-size: 18px; line-height: 1.65; color: #155c59; }
+.motion-learning .motion-formula { display: block; margin: 8px 0; font-size: clamp(19px, 2.1vw, 25px); font-weight: 800; line-height: 1.6; color: #174f83; font-variant-numeric: tabular-nums; letter-spacing: -.02em; }
+.motion-learning p.motion-caption { margin: 8px 0 0; font-size: 16px; line-height: 1.85; color: #305e63; }
+.motion-learning .motion-timeline { display: flex; flex-wrap: wrap; align-items: stretch; gap: 8px; margin: 20px 0 14px; }
+.motion-learning button { min-height: 44px; border: 1px solid #cad8e9; border-radius: 8px; padding: 9px 13px; background: #fff; color: #30547c; font-size: 14px; font-weight: 600; line-height: 1.5; cursor: pointer; }
+.motion-learning button:hover:not(:disabled) { background: #e9f2ff; border-color: #8eacd2; }
+.motion-learning button:focus-visible, .motion-learning select:focus-visible, .motion-learning summary:focus-visible { outline: 3px solid #168c82; outline-offset: 3px; }
+.motion-learning button:disabled { opacity: .5; cursor: default; }
+.motion-learning button.motion-dot { flex: 1 1 80px; min-width: 0; padding: 8px 10px; font-size: 13px; text-align: center; background: #f5f8fd; }
+.motion-learning button.motion-dot[aria-current="step"] { border-color: #2365bf; background: #e4eeff; color: #164c97; box-shadow: inset 0 -3px #2365bf; }
+.motion-learning .motion-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding-top: 14px; border-top: 1px solid var(--motion-line); }
+.motion-learning [data-motion-control="play"] { min-width: 112px; color: #fff; background: #215eaf; border-color: #215eaf; }
+.motion-learning [data-motion-control="play"]:hover:not(:disabled) { background: #194c92; color: #fff; }
+.motion-learning .motion-speed { display: inline-flex; align-items: center; gap: 7px; margin-left: auto; color: #4b6684; font-size: 13px; }
+.motion-learning select { min-height: 44px; max-width: 100%; padding: 8px 25px 8px 10px; border-radius: 7px; border: 1px solid #c8d8ea; color: #2a4f77; background-color: #fff; font-size: 14px; }
+.motion-learning .motion-counter { color: #4b6684; font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.motion-learning .motion-motion-note { margin: 12px 0 0; color: #58718c; font-size: 12px; line-height: 1.8; }
+.motion-learning .motion-transcript { margin-top: 18px; border-top: 1px solid var(--motion-line); padding-top: 12px; color: #3b5b7b; font-size: 14px; }
+.motion-learning .motion-transcript summary { cursor: pointer; padding: 8px 0; font-weight: 700; line-height: 1.6; }
+.motion-learning .motion-transcript p, .motion-learning .motion-transcript li { font-size: 14px; line-height: 1.85; }
+.motion-learning .motion-transcript ol { padding-left: 24px; }
+.motion-learning .motion-transcript li { margin: 10px 0; }
+
+/* Candidate score bars keep a stable scale throughout every step. */
+.motion-learning .motion-score-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: 12px; align-items: stretch; }
+.motion-learning .motion-candidate { min-width: 0; border: 1px solid #d7e3ef; border-radius: 11px; padding: 16px 14px; background: #f8fafd; transition: background-color .45s ease, border-color .45s ease, transform .45s ease, opacity .45s ease; }
+.motion-learning .motion-candidate-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 7px; margin-bottom: 20px; }
+.motion-learning .motion-candidate-head strong { color: #254e7b; font-size: 20px; }
+.motion-learning .motion-badge { display: inline-block; padding: 4px 8px; border-radius: 6px; background: #e5edf8; color: #3b5d85; font-size: 12px; font-weight: 700; line-height: 1.6; }
+.motion-learning .motion-bars { display: block; }
+.motion-learning .motion-bars > span { display: block; color: #486584; font-size: 13px; line-height: 1.6; }
+.motion-learning .motion-bars > small { display: block; margin: 7px 0 10px; color: #875443; font-size: 11px; line-height: 1.6; }
+.motion-learning .motion-bar-track { position: relative; min-width: 0; height: 14px; background: #e4ebf4; border-radius: 5px; margin: 7px 0 5px; }
+.motion-learning .motion-bar-fill { position: relative; display: block; height: 100%; width: var(--motion-width, 0%); max-width: 100%; min-width: 0; border-radius: inherit; background: #3678cc; transition: width .7s cubic-bezier(.2,.75,.3,1), background-color .4s ease; }
+.motion-learning .motion-bars > div > span, .motion-learning .motion-bars label { font-size: 13px; color: #486584; line-height: 1.6; }
+.motion-learning .motion-bars > div:nth-child(2) .motion-bar-fill { background: #15938c; }
+.motion-learning .motion-cutoff { position: absolute; z-index: 1; left: 85%; top: -5px; bottom: -5px; border-left: 2px dashed #a7513f; }
+.motion-learning .motion-cutoff span { position: absolute; bottom: 20px; left: -16px; color: #9a4534; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.motion-learning .motion-total { display: block; margin-top: 18px; padding-top: 12px; border-top: 1px solid #dce5ef; color: #264f79; font-weight: 800; font-size: 20px; font-variant-numeric: tabular-nums; }
+.motion-learning .motion-rank { min-height: 24px; display: block; margin-top: 9px; font-size: 14px; font-weight: 700; line-height: 1.65; color: #386787; }
+.motion-learning .motion-candidate[data-status="eligible"], .motion-learning .motion-candidate[data-status="ranked"], .motion-learning .motion-candidate[data-status="next"] { background: #eff9f6; border-color: #92c9bb; }
+.motion-learning .motion-candidate[data-status="eligible"] .motion-badge, .motion-learning .motion-candidate[data-status="ranked"] .motion-badge, .motion-learning .motion-candidate[data-status="next"] .motion-badge { color: #11665b; background: #dcefe8; }
+.motion-learning .motion-candidate[data-status="excluded"], .motion-learning .motion-candidate[data-status="failed"] { background: #fff5f1; border-color: #dfb4a8; }
+.motion-learning .motion-candidate[data-status="excluded"] .motion-badge, .motion-learning .motion-candidate[data-status="failed"] .motion-badge { color: #904331; background: #f8e5dd; }
+.motion-learning .motion-candidate[data-status="excluded"] .motion-bar-fill { background: #bb877a; }
+.motion-learning .motion-candidate[data-status="next"] { box-shadow: inset 0 0 0 2px #158b7e; }
+
+/* Every repeated extreme value stays individually visible. */
+.motion-learning .motion-score-tokens { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; justify-content: center; padding: 10px 0; }
+.motion-learning .motion-token { display: flex; flex: 0 1 68px; min-width: 54px; min-height: 83px; flex-direction: column; justify-content: center; align-items: center; gap: 5px; border: 1px solid #c9dbee; border-radius: 9px; padding: 10px 6px; background: #f1f6ff; color: #255488; transition: transform .5s ease, opacity .5s ease, background-color .5s ease, border-color .5s ease; }
+.motion-learning .motion-token strong { font-size: 24px; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.motion-learning .motion-token small { font-size: 11px; line-height: 1.5; text-align: center; }
+.motion-learning .motion-token.is-kept { border-color: #70b9aa; background: #e9f7f2; color: #18685c; }
+.motion-learning .motion-token.is-excluded { border-style: dashed; border-color: #d9b3a7; background: #fcf0eb; color: #975a48; transform: translateY(7px); }
+.motion-learning .motion-token.is-excluded strong { text-decoration: line-through; text-decoration-thickness: 1px; }
+.motion-learning .motion-token.is-current { box-shadow: 0 0 0 3px #d3e6ff; border-color: #3571b9; }
+
+/* Cost portions build without changing their denominator between stages. */
+.motion-learning .motion-cost-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.motion-learning .motion-cost-card { min-width: 0; border: 1px solid #d5e3f1; border-radius: 11px; padding: 18px 15px; background: #f9fbff; }
+.motion-learning .motion-cost-card h4 { margin: 0 0 15px; color: #244c7b; font-size: 18px; line-height: 1.5; }
+.motion-learning .motion-cost-stack { display: flex; width: 100%; height: 28px; border-radius: 6px; overflow: hidden; background: #e7edf4; margin: 15px 0; }
+.motion-learning .motion-cost-part { display: block; flex: 0 0 auto; width: var(--motion-width, 0%); max-width: 100%; height: 100%; background: #3678cc; transition: width .7s cubic-bezier(.2,.75,.3,1); }
+.motion-learning .motion-cost-part:nth-child(2) { background: #16978b; }
+.motion-learning .motion-cost-part:nth-child(3) { background: #d39c50; }
+.motion-learning .motion-cost-legend { display: grid; gap: 7px; margin-top: 14px; color: #486583; font-size: 13px; line-height: 1.8; }
+.motion-learning .motion-cost-legend > div { display: flex; justify-content: space-between; gap: 9px; }
+.motion-learning .motion-cost-legend strong { font-variant-numeric: tabular-nums; color: #2d5079; }
+.motion-learning .motion-cost-card .motion-total { color: #184f77; }
+
+/* A quiet process map: only the current stage receives emphasis. */
+.motion-learning .motion-flow { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.motion-learning .motion-flow-node { position: relative; min-width: 0; padding: 16px 14px; border: 1px solid #d3dfed; border-radius: 10px; background: #f6f9fd; transition: border-color .45s ease, background-color .45s ease, transform .45s ease; }
+.motion-learning .motion-flow-index { display: inline-flex; width: 30px; height: 30px; border-radius: 50%; justify-content: center; align-items: center; color: #3b6289; background: #e4edf7; font-size: 14px; font-weight: 800; }
+.motion-learning .motion-flow-node h4 { margin: 10px 0 7px; font-size: 16px; line-height: 1.5; color: #315477; }
+.motion-learning .motion-flow-node p { margin: 0; font-size: 13px; line-height: 1.8; color: #58728d; }
+.motion-learning .motion-flow-node.is-done { background: #eff8f5; border-color: #b1d5ca; }
+.motion-learning .motion-flow-node.is-done .motion-flow-index { color: #15655c; background: #d8eee6; }
+.motion-learning .motion-flow-node.is-active { background: #eaf2ff; border-color: #5085c9; box-shadow: inset 0 0 0 1px #5085c9; }
+.motion-learning .motion-flow-node.is-active .motion-flow-index { background: #2562b5; color: #fff; }
+
+@media (max-width: 650px) {
+  .motion-learning { margin: 22px 0; padding: 17px 14px; border-radius: 13px; }
+  .motion-learning .motion-heading h3 { font-size: 21px; }
+  .motion-learning p.motion-description, .motion-learning p.motion-caption { font-size: 15px; }
+  .motion-learning .motion-assumptions { font-size: 12px; }
+  .motion-learning .motion-stage { padding: 14px 10px; }
+  .motion-learning .motion-score-grid, .motion-learning .motion-cost-grid { grid-template-columns: 1fr; }
+  .motion-learning .motion-candidate { padding: 14px; }
+  .motion-learning .motion-candidate-head { margin-bottom: 16px; }
+  .motion-learning .motion-bars { display: block; }
+  .motion-learning .motion-candidate-head { margin-bottom: 10px; }
+  .motion-learning .motion-candidate-head strong { font-size: 18px; }
+  .motion-learning .motion-candidate .motion-total { margin-top: 10px; padding-top: 9px; }
+  .motion-learning .motion-candidate p.motion-rank { margin: 6px 0 0; font-size: 13px; line-height: 1.6; }
+  .motion-learning .motion-total { font-size: 19px; }
+  .motion-learning .motion-reading { padding: 15px 13px; }
+  .motion-learning .motion-step-title { font-size: 17px; }
+  .motion-learning .motion-formula { font-size: 21px; }
+  .motion-learning .motion-timeline { gap: 6px; }
+  .motion-learning button.motion-dot { flex-basis: calc(50% - 6px); font-size: 12px; padding: 8px; }
+  .motion-learning .motion-controls { gap: 7px; }
+  .motion-learning button { padding: 10px 11px; font-size: 13px; }
+  .motion-learning .motion-speed { margin-left: 0; flex-basis: 100%; margin-top: 5px; }
+  .motion-learning .motion-flow { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
+  .motion-learning .motion-flow-node { padding: 13px 10px; }
+  .motion-learning .motion-flow-node h4 { font-size: 15px; }
+  .motion-learning .motion-token { flex-basis: 58px; min-width: 48px; min-height: 77px; }
+  .motion-learning .motion-token strong { font-size: 21px; }
+}
+@media (max-width: 380px) {
+  .motion-learning .motion-flow { grid-template-columns: 1fr; }
+  .motion-learning .motion-controls [data-motion-control="play"] { min-width: 100px; }
+}
+.motion-learning[data-motion-reduced="true"] *, .motion-learning[data-motion-reduced="true"] *::before, .motion-learning[data-motion-reduced="true"] *::after { transition: none !important; animation: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .motion-learning *, .motion-learning *::before, .motion-learning *::after { transition: none !important; animation: none !important; }
+}
+/* Controls and legends for the implemented semantic markup. */
+.motion-learning .motion-scenario { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; margin: 14px 0; color: #3f6082; font-size: 14px; font-weight: 600; }
+.motion-learning .motion-scenario select { width: auto; max-width: 100%; }
+.motion-learning .motion-reduce { margin-top: 12px; font-size: 12px; min-height: 44px; background: #f5f8fc; }
+.motion-learning .motion-reduce[aria-pressed="true"] { background: #e8f5ef; border-color: #79b9a6; color: #146456; }
+.motion-learning p.motion-count-note { margin: 14px 0 0; text-align: center; font-size: 14px; color: #4b6786; line-height: 1.8; }
+.motion-learning .motion-cost-legend { margin: 14px 0 0; padding: 0; }
+.motion-learning .motion-cost-legend dt { display: flex; align-items: baseline; gap: 7px; font-size: 13px; font-weight: 500; }
+.motion-learning .motion-cost-legend dt::before { content: ''; display: inline-block; flex-shrink: 0; width: 9px; height: 9px; border-radius: 2px; background: #3678cc; }
+.motion-learning .motion-cost-legend > div:nth-child(2) dt::before { background: #16978b; }
+.motion-learning .motion-cost-legend > div:nth-child(3) dt::before { background: #d39c50; }
+.motion-learning .motion-cost-legend dd { margin: 0; color: #294f78; font-size: 13px; font-weight: 700; text-align: right; font-variant-numeric: tabular-nums; }
+.motion-learning .motion-cost-card p.motion-total { margin: 18px 0 12px; font-size: 17px; line-height: 1.8; }
+.motion-learning .motion-cost-card p.motion-total strong { display: block; font-size: 25px; color: #184f77; }

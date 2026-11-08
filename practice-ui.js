@@ -1,4 +1,5 @@
 import { lessons, questions } from './data.js';
+import { renderQuestionMotion } from './motion-learning.js';
 import { getQuestionDetails } from './question-solutions.js';
 import { chapterLabel, partLabel, resolveLessonId } from './curriculum.js';
 import {renderCoverageBadge} from './chapter-review.js';
@@ -156,8 +157,8 @@ export function renderQuestionExplanation(q, selected) {
   const correctReason = detail?.choices?.[q.answer]?.reason || q.explanation;
   const selectedReason = hasSelection ? detail?.choices?.[selected]?.reason : null;
   const review = `<section class="answer-review" aria-label="답안 비교"><h3>${hasSelection?'내 답과 정답 비교':'정답의 핵심 근거'}</h3><div class="answer-review-grid ${hasSelection && !matching?'has-comparison':''}">${hasSelection && !matching ? `<div class="answer-review-choice my-answer"><span>내가 고른 보기</span><strong>${label(selected)}</strong>${selectedReason?`<p>${esc(selectedReason)}</p>`:''}</div>`:''}<div class="answer-review-choice correct-answer"><span>${matching?'내 답 · 정답 보기':'정답 보기'}</span><strong>${label(q.answer)}</strong><p>${esc(correctReason)}</p></div></div></section>`;
-  if (!detail) return `${review}<p>${esc(q.explanation)}</p>`;
-  return `${review}<div class="detailed-explanation">
+  if (!detail) return `${review}<p>${esc(q.explanation)}</p>${renderQuestionMotion(q)}`;
+  return `${review}${renderQuestionMotion(q)}<div class="detailed-explanation">
     <section class="solution-summary"><h3>핵심 해설</h3><p>${esc(q.explanation)}</p></section>
     <section><h3>${esc(detail.conceptTitle || '개념 이해')}</h3><p>${esc(detail.concept)}</p></section>
     ${detail.steps?.length ? `<section class="solution-process"><h3>단계별 풀이 과정</h3><ol>${detail.steps.map(([title,body]) => `<li><strong>${esc(title)}</strong><p>${esc(body)}</p></li>`).join('')}</ol></section>` : ''}

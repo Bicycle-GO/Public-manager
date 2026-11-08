@@ -14,6 +14,8 @@ import { normalizePracticalState, practicalUnits } from './practical-data.js';
 import { sanitizeStudyState, questionSequence } from './study-state.js';
 import { mockFormats, examSource, createMockExam, gradeMockExam } from './mock-exam.js';
 import { renderLessonGuide } from './lesson-content.js';
+import { initMotionLearning } from './motion-controller.js';
+import { getQuestionMotionId } from './motion-learning.js';
 import { renderStudyMaterials, renderStudyNotes, renderMaterialTopics } from './study-ui.js';
 import { curriculum, partLabel, chapterLabel, resolveLessonId, migrateStudyState } from './curriculum.js';
 import { renderCurriculumOutline, renderChapterNavigation, renderPartDirectory, chapterUrl } from './curriculum-ui.js';
@@ -189,7 +191,7 @@ function writtenPractice() {
 function questionRow(q) {
  const answered = state.answers[q.id] !== undefined;
  const correct = state.answers[q.id]===q.answer;
- return `<article class="question-row card"><span class="question-index">${q.practiceNumber ? '<small>'+(q.collection==='proposal-evaluation-core'?'핵심':'예상')+'</small>'+String(q.practiceNumber).padStart(2,'0') : q.providedNumber ? '<small>자료</small>'+String(q.providedNumber).padStart(2,'0') : q.attachmentNumber ? '<small>'+ (q.type==='ox'?'OX':'첨부')+'</small>'+String(q.attachmentNumber).padStart(2,'0') : q.sourceNumber ? '<small>대화</small>'+String(q.sourceNumber).padStart(2,'0') : String(q.id).padStart(2,'0')}</span><button class="question-title" data-action="single-question" data-id="${q.id}"><div><span class="subject-label">제${q.subject}과목</span><span class="difficulty">${q.type==='ox'?'OX 문제':q.core?'단원별 핵심문제':q.difficulty}</span>${answered ? `<span class="answer-status ${correct?'correct':'incorrect'}">${correct?'정답':'복습 필요'}</span>` : ''}</div><h3>${q.text}</h3>${q.adapted?'<span class="adapted-badge">학습용 보정 · 해설에서 확인</span>':''}<p>${chapterLabel(lessons.find(l=>l.id===q.lesson).chapter)} · ${lessons.find(l=>l.id===q.lesson).title}</p></button><button class="icon-button ${state.bookmarks.includes('q'+q.id)?'bookmarked':''}" data-action="bookmark-question" data-id="${q.id}" aria-label="${esc(questionLabel(q))} 문제 북마크" aria-pressed="${state.bookmarks.includes('q'+q.id)}">${icon('bookmark')}</button><button class="round-arrow" data-action="single-question" data-id="${q.id}" aria-label="${esc(questionLabel(q))} 문제 풀기">${icon('arrow')}</button></article>`;
+ return `<article class="question-row card"><span class="question-index">${q.practiceNumber ? '<small>'+(q.collection==='proposal-evaluation-core'?'핵심':'예상')+'</small>'+String(q.practiceNumber).padStart(2,'0') : q.providedNumber ? '<small>자료</small>'+String(q.providedNumber).padStart(2,'0') : q.attachmentNumber ? '<small>'+ (q.type==='ox'?'OX':'첨부')+'</small>'+String(q.attachmentNumber).padStart(2,'0') : q.sourceNumber ? '<small>대화</small>'+String(q.sourceNumber).padStart(2,'0') : String(q.id).padStart(2,'0')}</span><button class="question-title" data-action="single-question" data-id="${q.id}"><div><span class="subject-label">제${q.subject}과목</span><span class="difficulty">${q.type==='ox'?'OX 문제':q.core?'단원별 핵심문제':q.difficulty}</span>${answered ? `<span class="answer-status ${correct?'correct':'incorrect'}">${correct?'정답':'복습 필요'}</span>` : ''}</div><h3>${q.text}</h3>${getQuestionMotionId(q)?'<span class="motion-question-badge">모션 풀이 제공</span>':''}${q.adapted?'<span class="adapted-badge">학습용 보정 · 해설에서 확인</span>':''}<p>${chapterLabel(lessons.find(l=>l.id===q.lesson).chapter)} · ${lessons.find(l=>l.id===q.lesson).title}</p></button><button class="icon-button ${state.bookmarks.includes('q'+q.id)?'bookmarked':''}" data-action="bookmark-question" data-id="${q.id}" aria-label="${esc(questionLabel(q))} 문제 북마크" aria-pressed="${state.bookmarks.includes('q'+q.id)}">${icon('bookmark')}</button><button class="round-arrow" data-action="single-question" data-id="${q.id}" aria-label="${esc(questionLabel(q))} 문제 풀기">${icon('arrow')}</button></article>`;
 }
 function questionTheoryLinks(q) {
  return `${isEvaluationQuestion(q)?'<button class="text-button" data-action="lesson" data-id="2-04">입찰제안평가 이론 읽기 →</button>':''}<button class="text-button" data-action="lesson" data-id="${q.lesson}">관련 이론 읽기 ${icon('arrow')}</button>`;
@@ -625,3 +627,4 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden)updatePrac
 setInterval(updatePracticalClock,1000);
 window.addEventListener('beforeunload',event=>{if(quiz?.mode==='exam'){event.preventDefault();event.returnValue='';}});
 route();
+initMotionLearning();

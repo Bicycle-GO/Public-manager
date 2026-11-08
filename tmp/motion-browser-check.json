@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-08",
+  "families": 4,
+  "manualNavigation": true,
+  "playPauseSpeed": true,
+  "mean8and12": true,
+  "questionAnswerHiddenUntilGraded": true,
+  "sameQuestionNumbers": true,
+  "noExtraLearningRecords": true,
+  "lessonModal": true,
+  "routeCleanup": true,
+  "reducedMotion": true,
+  "mobileNoOverflow": true,
+  "errors": [],
+  "failedRequests": []
+}
